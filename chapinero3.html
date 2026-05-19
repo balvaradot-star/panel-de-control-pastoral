@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Sistema Distrital Integrado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#111827',
+                        borderGray: '#1f2937',
+                        textGray: '#9ca3af',
+                        accentGold: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #seccion-remision-imprimible, #seccion-remision-imprimible * { visibility: visible; }
+            #seccion-remision-imprimible {
+                position: absolute; left: 0; top: 0; width: 100%;
+                color: #000000 !important; background: #ffffff !important;
+            }
+            .no-print { display: none !important; }
+        }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #111827; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 min-h-screen font-sans">
+
+    <div id="pantalla-auth" class="fixed inset-0 bg-darkBg flex items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-borderGray p-8 rounded-2xl w-full max-w-md shadow-2xl flex flex-col gap-6">
+            <div class="text-center">
+                <div class="bg-accentGold/10 text-accentGold w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-3 border border-accentGold/20">⛪</div>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Panel de Control</h2>
+                <p class="text-sm text-textGray mt-1">Sistema Distrital Integrado</p>
+            </div>
+
+            <div class="flex border-b border-borderGray text-sm">
+                <button id="tab-login" onclick="cambiarAuthTab('login')" class="flex-1 pb-2 font-bold text-accentGold border-b-2 border-accentGold">Iniciar Sesión</button>
+                <button id="tab-registro" onclick="cambiarAuthTab('registro')" class="flex-1 pb-2 font-medium text-textGray hover:text-white">Registrarse</button>
+            </div>
+
+            <form id="form-auth" onsubmit="procesarAuth(event)" autocomplete="off" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="auth-email" name="panel_email" autocomplete="off" autocapitalize="none" spellcheck="false" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold" placeholder="ejemplo@distrito.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Contraseña</label>
+                    <input type="text" id="auth-password" name="panel_clave_visual" autocomplete="off" autocapitalize="none" spellcheck="false" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold [-webkit-text-security:disc]" placeholder="••••••••">
+                </div>
+                <button type="submit" id="btn-auth-submit" class="w-full bg-accentGold hover:bg-yellow-600 text-black font-bold py-2.5 rounded-lg text-sm transition shadow-lg mt-2">
+                    Ingresar al Panel
+                </button>
+            </form>
+            <p class="text-[11px] text-center text-textGray border-t border-borderGray pt-4">Desarrollado por Bladimir Alvarado</p>
+        </div>
+    </div>
+
+    <div id="app-principal" class="hidden flex flex-col md:flex-row min-h-screen">
+        
+        <div class="w-full md:w-64 bg-cardBg border-r border-borderGray p-5 flex flex-col gap-4 no-print shrink-0">
+            <div class="flex items-center gap-3 pb-4 border-b border-borderGray">
+                <div class="bg-accentGold p-2 rounded-lg text-black font-bold">⛪</div>
+                <div>
+                    <h2 class="font-bold text-white text-base">Panel de Control</h2>
+                    <p class="text-[11px] text-textGray">Sistema Distrital Integrado</p>
+                </div>
+            </div>
+            <nav id="sidebar-nav" class="flex flex-col gap-1 text-sm text-textGray">
+                <a href="#" onclick="cambiarVista('dashboard', this)" class="p-2.5 bg-borderGray text-white font-medium rounded-lg transition border-l-4 border-accentGold pl-2">📊 Dashboard General</a>
+                <a href="#" onclick="cambiarVista('construccion', this)" class="p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition">🧱 Obra San Miguel</a>
+                <a href="#" onclick="cambiarVista('materiales', this)" class="p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition">📖 Escuela Sabática (IADPA)</a>
+                <a href="#" onclick="cambiarVista('prestamos', this)" class="p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition">💰 Carteras y Préstamos</a>
+                <a href="#" onclick="cambiarVista('miembros', this)" class="p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition">👥 Feligresía y Visitas</a>
+                <a href="#" onclick="cambiarVista('mision', this)" class="p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition">🎯 Misión G.P. 7-70</a>
+            </nav>
+            <div class="mt-auto pt-4 border-t border-borderGray">
+                <p class="text-[10px] text-textGray px-2 mb-2">Desarrollado por Bladimir Alvarado</p>
+                <button onclick="cerrarSesion()" class="w-full text-left p-2 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="flex-1 p-6 md:p-8 overflow-x-hidden">
+
+            <div id="vista-dashboard" class="vista-seccion flex flex-col gap-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white tracking-tight">Dashboard General Distrital</h1>
+                        <p class="text-sm text-textGray">Consolidado interactivo de indicadores, feligresía y configuración de iglesias</p>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-borderGray p-4 rounded-xl shadow-lg">
+                    <h4 class="text-xs font-bold uppercase text-accentGold tracking-wider mb-2">⚙️ Configuración Temática: Nombres de Iglesias del Distrito</h4>
+                    <p class="text-xs text-textGray mb-3">Edita los campos para renombrar las congregaciones de tu zona; los cambios se aplicarán en todo el sistema.</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[10px] text-textGray mb-1">Iglesia 1 (Principal Obra)</label>
+                            <input type="text" id="cfg-iglesia-1" value="San Miguel" onchange="actualizarNombresIglesias(0, this.value)" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-accentGold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-textGray mb-1">Iglesia 2</label>
+                            <input type="text" id="cfg-iglesia-2" value="Modelia" onchange="actualizarNombresIglesias(1, this.value)" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-accentGold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-textGray mb-1">Iglesia 3</label>
+                            <input type="text" id="cfg-iglesia-3" value="Central Chapinero" onchange="actualizarNombresIglesias(2, this.value)" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-accentGold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-textGray mb-1">Iglesia 4</label>
+                            <input type="text" id="cfg-iglesia-4" value="Grupo Misión" onchange="actualizarNombresIglesias(3, this.value)" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-accentGold">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 bg-blue-950/20 p-5 rounded-2xl border border-blue-900/30">
+                    <div class="lg:col-span-3 flex flex-col gap-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-blue-400">Meta Distrital de Crecimiento y Evangelismo</h4>
+                        <p class="text-xs text-textGray">Porcentaje de avance en base a los registros de nuevos bautismos consolidados en el distrito.</p>
+                        <div class="w-full bg-gray-800 rounded-full h-5 mt-1 overflow-hidden border border-gray-700 relative">
+                            <div id="dash-barra-bautismos" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full transition-all duration-500" style="width: 0%;"></div>
+                            <span id="dash-porcentaje-bautismos" class="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-wider">0% Logrado</span>
+                        </div>
+                    </div>
+                    <div class="bg-darkBg/60 p-3 rounded-xl border border-borderGray flex flex-col justify-center items-center text-center">
+                        <span class="text-[10px] text-textGray uppercase font-bold tracking-wider">Bautizados vs Meta</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span id="dash-cont-bautizados" class="text-2xl font-black text-cyan-400">0</span>
+                            <span class="text-textGray text-xs">/</span>
+                            <input type="number" id="input-meta-bautismos" value="12" onchange="cambiarMetaBautismos(this.value)" class="bg-transparent border-b border-gray-700 text-center font-bold text-sm text-white w-10 focus:outline-none focus:border-cyan-400">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-borderGray/30 p-5 rounded-2xl border border-borderGray">
+                    <div class="lg:col-span-2 flex flex-col gap-3">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-accentGold">Balance Financiero de la Obra San Miguel</h4>
+                        <p class="text-xs text-textGray">Comparativa en tiempo real de gastos consolidados frente al presupuesto maestro asignado.</p>
+                        
+                        <div class="w-full bg-gray-800 rounded-full h-5 mt-2 overflow-hidden border border-gray-700 relative">
+                            <div id="dash-barra-progreso" class="bg-gradient-to-r from-amber-500 to-yellow-500 h-full transition-all duration-500" style="width: 0%;"></div>
+                            <span id="dash-porcentaje-texto" class="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-wider">0% Ejecutado</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center mt-2">
+                            <div class="bg-darkBg/50 p-2 rounded border border-borderGray">
+                                <span class="text-[10px] text-textGray block">Materiales</span>
+                                <span id="dash-total-mat" class="text-xs font-bold text-white">$0</span>
+                            </div>
+                            <div class="bg-darkBg/50 p-2 rounded border border-borderGray">
+                                <span class="text-[10px] text-textGray block">Mano de Obra</span>
+                                <span id="dash-total-mo" class="text-xs font-bold text-white">$0</span>
+                            </div>
+                            <div class="bg-darkBg/50 p-2 rounded border border-borderGray">
+                                <span class="text-[10px] text-textGray block">Logística/Construc.</span>
+                                <span id="dash-total-gc" class="text-xs font-bold text-white">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between bg-darkBg/40 p-4 rounded-xl border border-borderGray">
+                        <div>
+                            <span class="text-[10px] text-textGray uppercase font-bold tracking-wider">Presupuesto Maestro Obra</span>
+                            <h2 id="dash-presupuesto-total-obra" class="text-2xl font-black text-emerald-400 mt-1">$230.000.000</h2>
+                        </div>
+                        <div class="border-t border-borderGray/60 pt-2 mt-2">
+                            <span class="text-[10px] text-textGray block">Total Gastos Acumulados:</span>
+                            <span id="dash-gastos-totales-obra" class="text-sm font-bold text-red-400">$0</span>
+                        </div>
+                        <div class="pt-1">
+                            <span class="text-[10px] text-textGray block">Saldo Disponible Obra:</span>
+                            <span id="dash-saldo-disponible-obra" class="text-sm font-bold text-blue-400">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-cardBg border border-borderGray p-5 rounded-xl shadow-lg">
+                        <p class="text-xs text-textGray font-bold uppercase tracking-wider">Feligresía Distrital</p>
+                        <h3 class="text-3xl font-bold text-white mt-2" id="dash-total-miembros">4</h3>
+                        <p class="text-xs text-emerald-400 mt-2">● Sincronizados con GP e Iglesia</p>
+                    </div>
+                    <div class="bg-cardBg border border-borderGray p-5 rounded-xl shadow-lg">
+                        <p class="text-xs text-textGray font-bold uppercase tracking-wider">Iglesias del Distrito</p>
+                        <h3 class="text-3xl font-bold text-white mt-2">4</h3>
+                        <p class="text-xs text-textGray mt-2" id="dash-lista-resumen-iglesias">Nombres configurados</p>
+                    </div>
+                    <div class="bg-cardBg border border-borderGray p-5 rounded-xl shadow-lg">
+                        <p class="text-xs text-textGray font-bold uppercase tracking-wider">Pedidos IADPA Global</p>
+                        <h3 class="text-3xl font-bold text-accentGold mt-2" id="dash-total-global">$195.900</h3>
+                        <p class="text-xs text-textGray mt-2" id="dash-conteo-iglesias">1 iglesia activa</p>
+                    </div>
+                    <div class="bg-cardBg border border-borderGray p-5 rounded-xl shadow-lg">
+                        <p class="text-xs text-textGray font-bold uppercase tracking-wider">Grupos Pequeños 7-70</p>
+                        <h3 class="text-3xl font-bold text-purple-400 mt-2" id="dash-total-gp">2</h3>
+                        <p class="text-xs text-purple-400 mt-2">Estructuras de evangelismo</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vista-construccion" class="vista-seccion hidden flex flex-col gap-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2 border-b border-borderGray">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white tracking-tight">Finanzas e Infraestructura Obra</h1>
+                        <p class="text-sm text-textGray">Gestión, edición y auditoría con indicadores de totales por categoría</p>
+                    </div>
+                    <div class="flex gap-2 bg-darkBg border border-borderGray p-2 rounded-xl">
+                        <span class="text-xs text-textGray font-medium self-center px-1">Presupuesto General Asignado:</span>
+                        <input type="number" id="input-presupuesto-maestro" value="230000000" onchange="cambiarPresupuestoMaestro(this.value)"
+                            class="bg-borderGray border border-gray-700 rounded px-2 py-1 text-xs text-emerald-400 font-bold w-36 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-4 shadow-xl flex flex-col">
+                        <div class="flex justify-between items-center pb-2 border-b border-borderGray mb-2">
+                            <h3 class="text-sm font-bold text-amber-400 flex items-center gap-1">🧱 1. Compra de Materiales</h3>
+                            <button onclick="agregarFilaGasto('materiales')" class="text-[10px] bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/20 font-bold">+ Nuevo Ítem</button>
+                        </div>
+                        <div class="bg-darkBg/40 border border-amber-500/10 p-2 rounded-lg mb-2 flex justify-between items-center text-xs">
+                            <span class="text-textGray font-medium">Subtotal Categoría:</span>
+                            <span id="subtotal-construccion-materiales" class="font-extrabold text-amber-400">$0</span>
+                        </div>
+                        <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-1 custom-scroll" id="lista-construccion-materiales"></div>
+                    </div>
+
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-4 shadow-xl flex flex-col">
+                        <div class="flex justify-between items-center pb-2 border-b border-borderGray mb-2">
+                            <h3 class="text-sm font-bold text-blue-400 flex items-center gap-1">👷 2. Mano de Obra / Personal</h3>
+                            <button onclick="agregarFilaGasto('manoObra')" class="text-[10px] bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/20 font-bold">+ Nuevo Ítem</button>
+                        </div>
+                        <div class="bg-darkBg/40 border border-blue-500/10 p-2 rounded-lg mb-2 flex justify-between items-center text-xs">
+                            <span class="text-textGray font-medium">Subtotal Categoría:</span>
+                            <span id="subtotal-construccion-manoObra" class="font-extrabold text-blue-400">$0</span>
+                        </div>
+                        <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-1 custom-scroll" id="lista-construccion-manoObra"></div>
+                    </div>
+
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-4 shadow-xl flex flex-col">
+                        <div class="flex justify-between items-center pb-2 border-b border-borderGray mb-2">
+                            <h3 class="text-sm font-bold text-purple-400 flex items-center gap-1">⚙️ 3. Gastos de Logística</h3>
+                            <button onclick="agregarFilaGasto('gastosConstruccion')" class="text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/20 font-bold">+ Nuevo Ítem</button>
+                        </div>
+                        <div class="bg-darkBg/40 border border-purple-500/10 p-2 rounded-lg mb-2 flex justify-between items-center text-xs">
+                            <span class="text-textGray font-medium">Subtotal Categoría:</span>
+                            <span id="subtotal-construccion-gastosConstruccion" class="font-extrabold text-purple-400">$0</span>
+                        </div>
+                        <div class="space-y-3 max-h-[50vh] overflow-y-auto pr-1 custom-scroll" id="lista-construccion-gastosConstruccion"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vista-materiales" class="vista-seccion hidden flex flex-col gap-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2 border-b border-borderGray">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white tracking-tight">Escuela Sabática - Pedidos e Impresión</h1>
+                        <p class="text-sm text-textGray">Pastor: Bladimir Alvarado | Control Distrital</p>
+                    </div>
+                    <div class="flex gap-3 no-print">
+                        <button onclick="window.print()" class="px-4 py-2 bg-borderGray hover:bg-gray-700 text-white font-medium rounded-lg text-sm flex items-center gap-2 transition">🖨️ Imprimir Factura</button>
+                        <button onclick="abrirModalPedido()" class="px-4 py-2 bg-accentGold hover:bg-yellow-600 text-black font-bold rounded-lg text-sm transition">+ Registrar/Editar Pedido</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+                    <div class="xl:col-span-5 bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl no-print">
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b border-borderGray">
+                            <h3 class="text-accentGold font-bold text-xs tracking-wider uppercase">Catálogo de Precios Base</h3>
+                            <span class="text-[10px] bg-amber-500/10 text-accentGold px-2 py-0.5 rounded-full border border-amber-500/20">IADPA 2026</span>
+                        </div>
+                        <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scroll" id="contenedor-precios-catalogo"></div>
+                    </div>
+
+                    <div class="xl:col-span-7 flex flex-col gap-6">
+                        <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl no-print">
+                            <h3 class="text-white font-bold text-xs tracking-wider uppercase mb-4">Consolidado Distrital (Haz click para desglosar remisión)</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
+                                    <thead>
+                                        <tr class="border-b border-borderGray text-xs text-textGray">
+                                            <th class="pb-3 px-1 font-semibold">Iglesia</th>
+                                            <th class="pb-3 font-semibold">Trimestre</th>
+                                            <th class="pb-3 text-right font-semibold">Valor Total</th>
+                                            <th class="pb-3 text-center font-semibold">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-borderGray text-gray-300" id="lista-pedidos-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="seccion-remision-imprimible" class="bg-white text-black p-6 rounded-xl border border-gray-200 shadow-2xl">
+                            <div class="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-4">
+                                <div>
+                                    <h2 class="text-2xl font-black tracking-tight text-gray-900">IADPA COLOMBIA</h2>
+                                    <p class="text-xs text-gray-600 font-bold uppercase">Asociación: Alto Magdalena</p>
+                                    <p class="text-xs text-gray-500">Distrito: Chapinero</p>
+                                </div>
+                                <div class="text-right text-xs">
+                                    <span class="bg-gray-900 text-white px-2.5 py-1 font-bold text-[10px] rounded tracking-wider">REMISIÓN DE CONTROL</span>
+                                    <p class="mt-2 text-gray-800 font-bold" id="remision-trimestre">4 Trimestre 2026</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs mb-4">
+                                <p><span class="font-bold text-gray-500">Iglesia Destino:</span> <span id="remision-iglesia" class="font-bold text-gray-900">-</span></p>
+                                <p><span class="font-bold text-gray-500">Pastor Encargado:</span> Bladimir Alvarado</p>
+                            </div>
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-gray-950 text-white font-bold">
+                                        <th class="p-2 border border-gray-800">Descripción del Material</th>
+                                        <th class="p-2 border border-gray-800 text-center w-16">Cant.</th>
+                                        <th class="p-2 border border-gray-800 text-right w-24">Precio Unit.</th>
+                                        <th class="p-2 border border-gray-800 text-right w-24">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="remision-tabla-items"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vista-prestamos" class="vista-seccion hidden flex flex-col gap-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white tracking-tight">Carteras y Créditos Distritales</h1>
+                        <p class="text-sm text-textGray">Administración de fondos rotatorios y amortizaciones por iglesia</p>
+                    </div>
+                    <button onclick="abrirModalPrestamo()" class="bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-xs px-4 py-2 rounded-xl transition shadow-lg">
+                        + Asignar Préstamo a Iglesia
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-cardBg border border-borderGray p-4 rounded-xl shadow-md">
+                        <span class="text-[10px] text-textGray block uppercase tracking-wider font-bold">Fondo Rotatorio Asignado</span>
+                        <h3 class="text-xl font-black text-emerald-400 mt-1" id="resumen-fondo-total">$50.000.000</h3>
+                    </div>
+                    <div class="bg-cardBg border border-borderGray p-4 rounded-xl shadow-md">
+                        <span class="text-[10px] text-textGray block uppercase tracking-wider font-bold">Cartera Activa Colocada</span>
+                        <h3 class="text-xl font-black text-amber-500 mt-1" id="resumen-cartera-prestada">$0</h3>
+                    </div>
+                    <div class="bg-cardBg border border-borderGray p-4 rounded-xl shadow-md">
+                        <span class="text-[10px] text-textGray block uppercase tracking-wider font-bold">Saldo de Capital Disponible</span>
+                        <h3 class="text-xl font-black text-cyan-400 mt-1" id="resumen-saldo-disponible">$50.000.000</h3>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl">
+                    <h3 class="text-white font-bold text-xs tracking-wider uppercase mb-4">Libro de Créditos y Amortización Activa</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="contenedor-tarjetas-prestamos">
+                        </div>
+                </div>
+            </div>
+
+            <div id="vista-miembros" class="vista-seccion hidden flex flex-col gap-6">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white tracking-tight">Feligresía y Control de Visitas</h1>
+                        <p class="text-sm text-textGray">Base de datos unificada, asignación de roles y cronogramas de visitación distrital</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="abrirModalMiembroNuevo()" class="px-4 py-2 bg-accentGold hover:bg-yellow-600 text-black text-xs font-bold rounded-lg transition shadow-md">+ Registrar Miembro</button>
+                        <button onclick="abrirModalGP()" class="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-lg transition">+ Crear G.P.</button>
+                    </div>
+                </div>
+
+                <div id="modalMiembro" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50 no-print">
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-2xl flex flex-col gap-4 w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scroll">
+                        <div class="border-b border-borderGray pb-2 flex justify-between items-center">
+                            <h3 class="text-white font-bold text-sm" id="titulo-form-miembros">Registrar Feligrés / Visita</h3>
+                            <button onclick="cerrarModalMiembro()" class="text-textGray hover:text-white text-xl">✕</button>
+                        </div>
+                        <form onsubmit="guardarMiembro(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-textGray uppercase mb-1">Nombre Completo</label>
+                                <input type="text" id="m-nombre" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Iglesia</label>
+                                    <select id="m-iglesia" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Grupo Pequeño</label>
+                                    <select id="m-gp" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold"></select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Cargo Eclesiástico</label>
+                                    <input type="text" id="m-cargo" placeholder="Ej: Anciano, Miembro" class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Condición Misionera</label>
+                                    <select id="m-tipo" onchange="alternarCamposVisita(this.value)" class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                                        <option value="Miembro">Miembro</option>
+                                        <option value="Miembro Activo">Miembro Activo</option>
+                                        <option value="Visita">Visita</option>
+                                        <option value="Recién Bautizado">Recién Bautizado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="campos-visita-adicionales" class="flex flex-col gap-3 border-t border-gray-800 pt-3">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-purple-400 uppercase mb-1">Fecha de Visita / Seguimiento</label>
+                                        <input type="date" id="m-fecha-visita" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-accentGold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-purple-400 uppercase mb-1">Método Utilizado</label>
+                                        <select id="m-medio-contacto" class="w-full bg-borderGray border border-gray-700 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-accentGold">
+                                            <option value="Llamada">Llamada</option>
+                                            <option value="WhatsApp">WhatsApp</option>
+                                            <option value="Visita Personal">Visita Personal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p id="texto-ayuda-visita" class="text-[10px] text-amber-500/80 italic">Si registras una fecha, el sistema calculará el próximo control 20 días después.</p>
+                            </div>
+
+                            <div class="flex justify-end gap-2 pt-2 border-t border-gray-800">
+                                <button type="button" onclick="cerrarModalMiembro()" class="px-3 py-1.5 bg-gray-800 text-white text-xs font-bold rounded-lg">Cancelar</button>
+                                <button type="button" onclick="limpiarFormularioMiembros()" class="px-3 py-1.5 bg-gray-700 text-white text-xs font-bold rounded-lg">Limpiar</button>
+                                <button type="submit" class="px-4 py-1.5 bg-accentGold text-black text-xs font-bold rounded-lg shadow-md hover:bg-yellow-600 transition" id="btn-guardar-miembro">Guardar Registro</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                        <div class="bg-cardBg/50 p-3 rounded-xl border border-borderGray flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-bold text-textGray uppercase">Registros en el Distrito</span>
+                                <span class="text-xs bg-accentGold/10 text-accentGold px-2 py-0.5 rounded-full font-mono font-bold border border-accentGold/20 w-fit" id="badge-contador-feligreses">4 Miembros</span>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <label for="filtro-iglesia-miembros" class="text-[10px] font-bold text-textGray uppercase tracking-wider whitespace-nowrap">Filtrar por iglesia</label>
+                                <select id="filtro-iglesia-miembros" onchange="cambiarFiltroIglesiaMiembros(this.value)" class="w-full sm:w-56 bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-accentGold"></select>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 custom-scroll overflow-y-auto max-h-[70vh] pr-1" id="listado-tarjetas-feligresia">
+                            </div>
+                </div>
+            </div>
+
+            <div id="vista-mision" class="vista-seccion hidden flex flex-col gap-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Misión G.P. 7-70</h1>
+                    <p class="text-sm text-textGray">Cronogramas de evangelismo integrado y avance territorial</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-purple-500/10 text-purple-400 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-purple-500/20">Misión 1</span>
+                            <span class="text-xs text-emerald-400 font-bold flex items-center gap-1">● Activo</span>
+                        </div>
+                        <h3 class="text-white font-extrabold text-base tracking-tight mt-1">Consolidación de Estructura Interna</h3>
+                        <p class="text-xs text-textGray leading-relaxed">Organizar las directivas de los grupos pequeños base, confirmando líderes y secretarios misioneros distritales.</p>
+                        <div class="mt-4 pt-3 border-t border-borderGray/60 flex justify-between items-center text-[11px]">
+                            <span class="text-textGray">Meta de Ejecución:</span>
+                            <span class="font-bold text-white">Semana 1 - 2</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/10 text-amber-400 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-amber-500/20">Misión 2</span>
+                            <span class="text-xs text-amber-400 font-bold flex items-center gap-1">⏱️ En espera</span>
+                        </div>
+                        <h3 class="text-white font-extrabold text-base tracking-tight mt-1">Siembra y Captación de Visitas Activas</h3>
+                        <p class="text-xs text-textGray leading-relaxed">Distribución sistemática de folletos de impacto y registro ordenado de las personas que asisten a las casas.</p>
+                        <div class="mt-4 pt-3 border-t border-borderGray/60 flex justify-between items-center text-[11px]">
+                            <span class="text-textGray">Meta de Ejecución:</span>
+                            <span class="font-bold text-white">Semana 3 - 5</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-cardBg border border-borderGray rounded-xl p-5 shadow-xl flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/10 text-cyan-400 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-cyan-500/20">Misión 3</span>
+                            <span class="text-xs text-textGray flex items-center gap-1">🔒 Bloqueado</span>
+                        </div>
+                        <h3 class="text-white font-extrabold text-base tracking-tight mt-1">Cosecha y Decisiones de Bautismo</h3>
+                        <p class="text-xs text-textGray leading-relaxed">Consolidar las semanas de evangelismo del distrito Chapinero y guiar a las decisiones por el bautismo.</p>
+                        <div class="mt-4 pt-3 border-t border-borderGray/60 flex justify-between items-center text-[11px]">
+                            <span class="text-textGray">Meta de Ejecución:</span>
+                            <span class="font-bold text-white">Semana 6 - 8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4 mt-2">
+                    <h2 class="text-lg font-bold text-purple-400 tracking-tight flex items-center gap-2">📊 Monitoreo de Células: Grupos Pequeños 7-70</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="contenedor-lista-gp-mision"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalPedido" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50 no-print">
+        <div class="bg-cardBg border border-borderGray rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-borderGray px-6 py-4 flex justify-between items-center border-b border-gray-800">
+                <h3 class="font-bold text-white text-lg" id="modal-pedido-titulo">Registrar Formulario de Pedido</h3>
+                <button onclick="cerrarModalPedido()" class="text-textGray hover:text-white text-xl">✕</button>
+            </div>
+            <form onsubmit="guardarPedido(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto space-y-4 custom-scroll flex-1">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-textGray uppercase mb-1">Seleccionar Iglesia</label>
+                            <select id="ped-iglesia" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-textGray uppercase mb-1">Trimestre fiscal</label>
+                            <select id="ped-trimestre" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                                <option value="1 Trimestre 2026">1 Trimestre 2026</option>
+                                <option value="2 Trimestre 2026">2 Trimestre 2026</option>
+                                <option value="3 Trimestre 2026">3 Trimestre 2026</option>
+                                <option value="4 Trimestre 2026" selected>4 Trimestre 2026</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="border-t border-borderGray/60 pt-4">
+                        <h4 class="text-xs font-bold text-accentGold uppercase tracking-wider mb-3">Cantidades por Material:</h4>
+                        <div class="space-y-2 max-h-[40vh] overflow-y-auto pr-1 custom-scroll" id="modal-pedido-inputs-materiales"></div>
+                    </div>
+                </div>
+                <div class="bg-borderGray px-6 py-3 flex justify-end gap-3 border-t border-gray-800">
+                    <button type="button" onclick="cerrarModalPedido()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold rounded-lg transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-accentGold hover:bg-yellow-600 text-black text-xs font-bold rounded-lg transition">Guardar Configuración</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalGP" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50 no-print">
+        <div class="bg-cardBg border border-borderGray rounded-xl w-full max-w-sm shadow-2xl">
+            <div class="bg-borderGray px-4 py-3 flex justify-between items-center border-b border-gray-800">
+                <h3 class="font-bold text-white text-sm">Crear Nuevo Grupo Pequeño 7-70</h3>
+                <button onclick="cerrarModalGP()" class="text-textGray hover:text-white">✕</button>
+            </div>
+            <form onsubmit="guardarGP(event)" class="p-4 space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Nombre del Grupo Pequeño</label>
+                    <input type="text" id="gp-nombre" required placeholder="Ej: Maranatha, El Shaddai" class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalGP()" class="px-3 py-1.5 bg-gray-700 text-white text-xs font-bold rounded">Cancelar</button>
+                    <button type="submit" class="px-3 py-1.5 bg-purple-500 text-white text-xs font-bold rounded">Dar de Alta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalPrestamo" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50 no-print">
+        <div class="bg-cardBg border border-borderGray rounded-xl w-full max-w-sm shadow-2xl">
+            <div class="bg-borderGray px-4 py-3 flex justify-between items-center border-b border-gray-800">
+                <h3 class="font-bold text-white text-sm" id="titulo-modal-prestamo">Asignar Préstamo Financiero</h3>
+                <button onclick="cerrarModalPrestamo()" class="text-textGray hover:text-white">✕</button>
+            </div>
+            <form onsubmit="guardarPrestamo(event)" class="p-4 space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Iglesia Beneficiaria</label>
+                    <select id="p-iglesia" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textGray uppercase mb-1">Monto del Capital ($)</label>
+                    <input type="number" id="p-valor" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-textGray uppercase mb-1">Plazo (Meses)</label>
+                        <input type="number" id="p-meses" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-textGray uppercase mb-1">Interés Mensual (%)</label>
+                        <input type="number" step="0.1" id="p-interes" required class="w-full bg-borderGray border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-accentGold">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-gray-800">
+                    <button type="button" onclick="cerrarModalPrestamo()" class="px-3 py-1.5 bg-gray-700 text-white text-xs font-bold rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-1.5 bg-emerald-500 text-black font-bold text-xs rounded">Confirmar Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let iglesiasDistrito = ["San Miguel", "Modelia", "Central Chapinero", "Grupo Misión"];
+
+        const CATALOGO_MATERIALES = [
+            { id: "mat_1", nombre: "Guía adulto ALUMNO", precio: 7600 },
+            { id: "mat_2", nombre: "Guía adulto ALUMNO EN INGLÉS", precio: 8100 },
+            { id: "mat_3", nombre: "Guía adulto ALUMNO LETRA GIGANTE", precio: 29900 },
+            { id: "mat_4", fontBold: true, nombre: "Guía adulto MAESTRO", precio: 29900 },
+            { id: "mat_5", nombre: "Guía adulto MAESTRO EN INGLÉS", precio: 23000 },
+            { id: "mat_6", nombre: "Guía de UNIVERSITARIO", precio: 23900 },
+            { id: "mat_7", nombre: "Libro comentario 3 EN 1", precio: 49400 },
+            { id: "mat_8", nombre: "Guía de BEBES", precio: 39900 },
+            { id: "mat_9", nombre: "Guía de CUNA", precio: 28900 },
+            { id: "mat_10", nombre: "Guía de JARDÍN DE INFANTES", precio: 21900 },
+            { id: "mat_11", nombre: "Guía de PRIMARIOS", precio: 22900 },
+            { id: "mat_12", fontBold: true, nombre: "Guía de MENORES", precio: 22500 },
+            { id: "mat_13", nombre: "Guía de ADOLESCENTE - FE REAL", precio: 23900 },
+            { id: "mat_14", nombre: "Guía de JÓVENES", precio: 20300 },
+            { id: "mat_15", nombre: "PROGRAMA DE BEBES", precio: 28000 },
+            { id: "mat_16", nombre: "Programa de CUNA", precio: 29700 },
+            { id: "mat_17", nombre: "Programa de JARDÍN DE INFANTES", precio: 29700 },
+            { id: "mat_18", nombre: "Programa de PRIMARIOS", precio: 29700 },
+            { id: "mat_19", nombre: "Programa de MENORES", precio: 31300 },
+            { id: "mat_20", nombre: "Programa de ADOLESCENTE - FE REAL", precio: 36900 },
+            { id: "mat_21", nombre: "Programa de JÓVENES", precio: 35900 },
+            { id: "mat_22", nombre: "Programa de ESCUELA SABATICA", precio: 15200 },
+            { id: "mat_23", nombre: "Revista AVANZAD", precio: 9600 },
+            { id: "mat_24", nombre: "Revista PRIORIDADES", precio: 3200 },
+            { id: "mat_25", nombre: "Nuevo horizonte (Rumbo)", precio: 0 },
+            { id: "mat_26", nombre: "Mision adultos", precio: 0 },
+            { id: "mat_27", nombre: "Mision niños", precio: 0 },
+            { id: "mat_28", nombre: "Materiales anuales (solo para primer trimestre)", precio: 0 },
+            { id: "mat_29", nombre: "Momento infantil alumno", precio: 50900 },
+            { id: "mat_30", nombre: "Momento infantil maestro", precio: 36900 },
+            { id: "mat_31", nombre: "Revista ANCIANO", precio: 0 }
+        ];
+
+        let listadoGastosObra = [
+            { id: "g1", cat: "materiales", desc: "Varillas de acero de 1/2 pulgada", cant: 11401677 },
+            { id: "g2", cat: "materiales", desc: "Concreto premezclado zapatas", cant: 6879555 },
+            { id: "g3", cat: "manoObra", desc: "Pago planilla catorcena obreros", cant: 6500000 },
+            { id: "g4", cat: "gastosConstruccion", desc: "Excavación de tierra", cant: 12000000 }
+        ];
+
+        let listadoPedidosIADPA = [
+            { id: "ped_sm_4t", iglesia: "San Miguel", trimestre: "4 Trimestre 2026", cantidades: { "mat_1": 17, "mat_10": 2, "mat_11": 1 } }
+        ];
+
+        let gruposPequeños = ["Maranatha", "Sión"];
+        
+        let listadoMiembros = [
+            { id: "m_1", nombre: "Lozano", iglesia: "San Miguel", gp: "Maranatha", cargo: "Anciano", tipo: "Miembro" },
+            { id: "m_2", nombre: "Alexis", iglesia: "Modelia", gp: "Sión", cargo: "Líder GP", tipo: "Recién Bautizado" },
+            { id: "m_3", nombre: "Norbey Ballesteros", iglesia: "San Miguel", gp: "Maranatha", cargo: "Tesorero", tipo: "Miembro Activo" },
+            { id: "m_4", nombre: "Andrés Silva", iglesia: "Central Chapinero", gp: "Ninguno", cargo: "Visita", tipo: "Visita", fechaVisita: "2026-05-10", medioContacto: "WhatsApp", fechaProxima: "2026-05-30" }
+        ];
+
+        // Base de Datos de Préstamos
+        let listadoPrestamos = [
+            { id: "p_1", iglesia: "San Miguel", valor: 15000000, meses: 12, interes: 1.5 },
+            { id: "p_2", iglesia: "Modelia", valor: 8000000, meses: 6, interes: 0.0 }
+        ];
+
+        let presupuestoMaestroObra = 230000000;
+        let metaBautismosDistrital = 12;
+        let pedidoSeleccionadoId = "ped_sm_4t";
+        
+        // Variables de control de edición exclusivas e independientes
+        let idEdicionIADPA = null;
+        let idMiembroEdicion = null; 
+        let idPrestamoEdicion = null;
+        let filtroIglesiaMiembros = "Todas";
+        const FELIGRESIA_STORAGE_KEY = 'pc_chapinero_feligresia_v1';
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyBzjXj7GrU7IVPx0sQyBXVX1xqwncOlmC8",
+            authDomain: "mision-7-70-chapinero.firebaseapp.com",
+            projectId: "mision-7-70-chapinero",
+            storageBucket: "mision-7-70-chapinero.firebasestorage.app",
+            messagingSenderId: "1073775861417",
+            appId: "1:1073775861417:web:34ede68b5b113064e693b8"
+        };
+        const FIREBASE_SDK_VERSION = "10.12.5";
+        const FIRESTORE_FELIGRESIA_COLLECTION = "panel_data";
+        const FIRESTORE_FELIGRESIA_DOC = "feligresia_visitas";
+        let authModo = "login";
+        let firebaseServicios = null;
+        let firebaseDisponible = false;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            cargarEstadoFeligresia();
+            await inicializarFirebasePanel();
+            renderizarCatalogoPrecios();
+            actualizarSelectsIglesias();
+            renderizarTodo();
+        });
+
+        function escaparHTML(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function argumentoJS(valor) {
+            return escaparHTML(JSON.stringify(String(valor ?? '')));
+        }
+
+        function cargarEstadoFeligresia() {
+            try {
+                const estadoGuardado = JSON.parse(localStorage.getItem(FELIGRESIA_STORAGE_KEY));
+                if(!estadoGuardado) return;
+                if(Array.isArray(estadoGuardado.listadoMiembros)) listadoMiembros = estadoGuardado.listadoMiembros;
+                if(Array.isArray(estadoGuardado.gruposPequeños)) gruposPequeños = estadoGuardado.gruposPequeños;
+            } catch (error) {
+                console.warn('No se pudo cargar el estado de feligresia:', error);
+            }
+        }
+
+        async function inicializarFirebasePanel() {
+            try {
+                const [{ initializeApp }, authModule, firestoreModule] = await Promise.all([
+                    import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-app.js`),
+                    import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-auth.js`),
+                    import(`https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}/firebase-firestore.js`)
+                ]);
+
+                const app = initializeApp(FIREBASE_CONFIG);
+                firebaseServicios = {
+                    auth: authModule.getAuth(app),
+                    db: firestoreModule.getFirestore(app),
+                    createUserWithEmailAndPassword: authModule.createUserWithEmailAndPassword,
+                    signInWithEmailAndPassword: authModule.signInWithEmailAndPassword,
+                    signOut: authModule.signOut,
+                    doc: firestoreModule.doc,
+                    getDoc: firestoreModule.getDoc,
+                    setDoc: firestoreModule.setDoc,
+                    serverTimestamp: firestoreModule.serverTimestamp
+                };
+                firebaseDisponible = true;
+            } catch (error) {
+                firebaseDisponible = false;
+                console.warn('Firebase no esta disponible. Se usara localStorage:', error);
+            }
+        }
+
+        async function cargarEstadoFeligresiaFirebase() {
+            if(!firebaseDisponible || !firebaseServicios) return false;
+            try {
+                const ref = firebaseServicios.doc(
+                    firebaseServicios.db,
+                    FIRESTORE_FELIGRESIA_COLLECTION,
+                    FIRESTORE_FELIGRESIA_DOC
+                );
+                const snap = await firebaseServicios.getDoc(ref);
+                if(!snap.exists()) {
+                    await guardarEstadoFeligresiaFirebase();
+                    return true;
+                }
+
+                const data = snap.data();
+                if(Array.isArray(data.listadoMiembros)) listadoMiembros = data.listadoMiembros;
+                if(Array.isArray(data.gruposPequeños)) gruposPequeños = data.gruposPequeños;
+                guardarEstadoFeligresiaLocal();
+                return true;
+            } catch (error) {
+                console.warn('No se pudo cargar feligresia desde Firebase:', error);
+                return false;
+            }
+        }
+
+        async function guardarEstadoFeligresiaFirebase() {
+            if(!firebaseDisponible || !firebaseServicios) return false;
+            try {
+                const ref = firebaseServicios.doc(
+                    firebaseServicios.db,
+                    FIRESTORE_FELIGRESIA_COLLECTION,
+                    FIRESTORE_FELIGRESIA_DOC
+                );
+                await firebaseServicios.setDoc(ref, {
+                    listadoMiembros,
+                    gruposPequeños,
+                    actualizadoEn: firebaseServicios.serverTimestamp()
+                }, { merge: true });
+                return true;
+            } catch (error) {
+                console.warn('No se pudo guardar feligresia en Firebase:', error);
+                return false;
+            }
+        }
+
+        function guardarEstadoFeligresiaLocal() {
+            try {
+                localStorage.setItem(FELIGRESIA_STORAGE_KEY, JSON.stringify({
+                    listadoMiembros,
+                    gruposPequeños
+                }));
+            } catch (error) {
+                console.warn('No se pudo guardar el estado de feligresia:', error);
+            }
+        }
+
+        async function guardarEstadoFeligresia() {
+            guardarEstadoFeligresiaLocal();
+            await guardarEstadoFeligresiaFirebase();
+        }
+
+        function cambiarAuthTab(tab) {
+            authModo = tab;
+            const tl = document.getElementById('tab-login');
+            const tr = document.getElementById('tab-registro');
+            const btn = document.getElementById('btn-auth-submit');
+            if(tab === 'login') {
+                tl.className = "flex-1 pb-2 font-bold text-accentGold border-b-2 border-accentGold";
+                tr.className = "flex-1 pb-2 font-medium text-textGray hover:text-white";
+                btn.innerText = "Ingresar al Panel";
+            } else {
+                tr.className = "flex-1 pb-2 font-bold text-accentGold border-b-2 border-accentGold";
+                tl.className = "flex-1 pb-2 font-medium text-textGray hover:text-white";
+                btn.innerText = "Registrar Nueva Cuenta";
+            }
+        }
+
+        async function procesarAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const btn = document.getElementById('btn-auth-submit');
+            const textoOriginal = btn.innerText;
+
+            if(!firebaseDisponible || !firebaseServicios) {
+                alert("Firebase no esta disponible en este momento. Revisa tu conexion a internet o publica la pagina antes de usar login compartido.");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerText = authModo === "login" ? "Ingresando..." : "Registrando...";
+
+                if(authModo === "login") {
+                    await firebaseServicios.signInWithEmailAndPassword(firebaseServicios.auth, email, password);
+                } else {
+                    await firebaseServicios.createUserWithEmailAndPassword(firebaseServicios.auth, email, password);
+                }
+
+                await cargarEstadoFeligresiaFirebase();
+                actualizarSelectsIglesias();
+                renderizarTodo();
+            } catch (error) {
+                console.error(error);
+                let mensaje = "No se pudo completar el acceso. Verifica el correo y la contraseña.";
+                if(error.code === "auth/email-already-in-use") mensaje = "Ese correo ya esta registrado. Usa Iniciar Sesion.";
+                if(error.code === "auth/weak-password") mensaje = "La contraseña debe tener al menos 6 caracteres.";
+                if(error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") mensaje = "Correo o contraseña incorrectos.";
+                alert(mensaje);
+                return;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = textoOriginal;
+            }
+
+            document.getElementById('pantalla-auth').classList.add('hidden');
+            document.getElementById('app-principal').classList.remove('hidden');
+        }
+
+        async function cerrarSesion() {
+            if(firebaseDisponible && firebaseServicios) {
+                try {
+                    await firebaseServicios.signOut(firebaseServicios.auth);
+                } catch (error) {
+                    console.warn('No se pudo cerrar sesion en Firebase:', error);
+                }
+            }
+            document.getElementById('app-principal').classList.add('hidden');
+            document.getElementById('pantalla-auth').classList.remove('hidden');
+        }
+
+        function cambiarVista(vistaId, elementoLink) {
+            document.querySelectorAll('.vista-seccion').forEach(seccion => seccion.classList.add('hidden'));
+            document.getElementById(`vista-${vistaId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('#sidebar-nav a').forEach(link => {
+                link.className = "p-2.5 hover:bg-borderGray hover:text-white rounded-lg transition";
+            });
+            elementoLink.className = "p-2.5 bg-borderGray text-white font-medium rounded-lg transition border-l-4 border-accentGold pl-2";
+        }
+
+        function renderizarCatalogoPrecios() {
+            const cont = document.getElementById('contenedor-precios-catalogo');
+            if(!cont) return;
+            cont.innerHTML = CATALOGO_MATERIALES.map(m => `
+                <div class="flex justify-between items-center bg-darkBg/60 p-2 rounded-lg border border-borderGray/60">
+                    <span class="text-xs text-gray-300 font-medium ${m.fontBold ? 'text-amber-400 font-bold' : ''}">${m.nombre}</span>
+                    <span class="text-xs font-mono font-bold text-white">$${m.precio.toLocaleString('es-CO')}</span>
+                </div>
+            `).join('');
+        }
+
+        function actualizarNombresIglesias(index, valor) {
+            if(valor.trim() !== "") {
+                iglesiasDistrito[index] = valor;
+                actualizarSelectsIglesias();
+                renderizarTodo();
+            }
+        }
+
+        function cambiarPresupuestoMaestro(v) {
+            presupuestoMaestroObra = parseFloat(v) || 0;
+            renderizarTodo();
+        }
+
+        function cambiarMetaBautismos(v) {
+            metaBautismosDistrital = parseInt(v) || 1;
+            renderizarTodo();
+        }
+
+        function actualizarSelectsIglesias() {
+            const selPed = document.getElementById('ped-iglesia');
+            const selM = document.getElementById('m-iglesia');
+            const selP = document.getElementById('p-iglesia');
+            const selFiltroM = document.getElementById('filtro-iglesia-miembros');
+            
+            const opciones = iglesiasDistrito.map(i => `<option value="${escaparHTML(i)}">${escaparHTML(i)}</option>`).join('');
+            if(selPed) selPed.innerHTML = opciones;
+            if(selM) selM.innerHTML = opciones;
+            if(selP) selP.innerHTML = opciones;
+            if(selFiltroM) {
+                const filtroActualValido = filtroIglesiaMiembros === "Todas" || iglesiasDistrito.includes(filtroIglesiaMiembros);
+                if(!filtroActualValido) filtroIglesiaMiembros = "Todas";
+                selFiltroM.innerHTML = `<option value="Todas">Todas las iglesias</option>` + opciones;
+                selFiltroM.value = filtroIglesiaMiembros;
+            }
+        }
+
+        function cambiarFiltroIglesiaMiembros(valor) {
+            filtroIglesiaMiembros = valor || "Todas";
+            renderizarModuloMiembrosYGP();
+        }
+
+        function renderizarTodo() {
+            renderizarDashboardGeneral();
+            renderizarModuloConstruccion();
+            renderizarModuloMateriales();
+            renderizarModuloPrestamos();
+            renderizarModuloMiembrosYGP();
+        }
+
+        // DASHBOARD GENERAL
+        function renderizarDashboardGeneral() {
+            const listResumen = document.getElementById('dash-lista-resumen-iglesias');
+            if(!listResumen) return;
+
+            listResumen.innerText = iglesiasDistrito.join(', ');
+            
+            let totalMat = listadoGastosObra.filter(g => g.cat === 'materiales').reduce((acc, g) => acc + g.cant, 0);
+            let totalMo = listadoGastosObra.filter(g => g.cat === 'manoObra').reduce((acc, g) => acc + g.cant, 0);
+            let totalGc = listadoGastosObra.filter(g => g.cat === 'gastosConstruccion').reduce((acc, g) => acc + g.cant, 0);
+            let totalGastos = totalMat + totalMo + totalGc;
+            let saldoObra = presupuestoMaestroObra - totalGastos;
+
+            document.getElementById('dash-total-mat').innerText = `$${totalMat.toLocaleString('es-CO')}`;
+            document.getElementById('dash-total-mo').innerText = `$${totalMo.toLocaleString('es-CO')}`;
+            document.getElementById('dash-total-gc').innerText = `$${totalGc.toLocaleString('es-CO')}`;
+            document.getElementById('dash-presupuesto-total-obra').innerText = `$${presupuestoMaestroObra.toLocaleString('es-CO')}`;
+            document.getElementById('dash-gastos-totales-obra').innerText = `$${totalGastos.toLocaleString('es-CO')}`;
+            document.getElementById('dash-saldo-disponible-obra').innerText = `$${saldoObra.toLocaleString('es-CO')}`;
+
+            let pctObra = Math.min(100, Math.round((totalGastos / presupuestoMaestroObra) * 100)) || 0;
+            document.getElementById('dash-barra-progreso').style.width = `${pctObra}%`;
+            document.getElementById('dash-porcentaje-texto').innerText = `${pctObra}% Ejecutado`;
+
+            let cantBautizados = listadoMiembros.filter(m => m.tipo === "Recién Bautizado").length;
+            document.getElementById('dash-cont-bautizados').innerText = cantBautizados;
+            let pctBautismos = Math.min(100, Math.round((cantBautizados / metaBautismosDistrital) * 100)) || 0;
+            document.getElementById('dash-barra-bautismos').style.width = `${pctBautismos}%`;
+            document.getElementById('dash-porcentaje-bautismos').innerText = `${pctBautismos}% Logrado`;
+
+            document.getElementById('dash-total-miembros').innerText = listadoMiembros.length;
+            document.getElementById('dash-total-gp').innerText = gruposPequeños.length;
+
+            let totalIadpa = 0;
+            listadoPedidosIADPA.forEach(p => {
+                Object.keys(p.cantidades).forEach(matId => {
+                    let matObj = CATALOGO_MATERIALES.find(c => c.id === matId);
+                    if(matObj) totalIadpa += (p.cantidades[matId] * matObj.precio);
+                });
+            });
+            document.getElementById('dash-total-global').innerText = `$${totalIadpa.toLocaleString('es-CO')}`;
+            document.getElementById('dash-conteo-iglesias').innerText = `${listadoPedidosIADPA.length} de 4 iglesias con pedido`;
+        }
+
+        // FINANZAS DE OBRA
+        function renderizarModuloConstruccion() {
+            const categorias = ['materiales', 'manoObra', 'gastosConstruccion'];
+            categorias.forEach(cat => {
+                const contenedor = document.getElementById(`lista-construccion-${cat}`);
+                if(!contenedor) return;
+
+                const itemsFiltrados = listadoGastosObra.filter(g => g.cat === cat);
+                let subtotal = itemsFiltrados.reduce((acc, i) => acc + i.cant, 0);
+                document.getElementById(`subtotal-construccion-${cat}`).innerText = `$${subtotal.toLocaleString('es-CO')}`;
+                
+                contenedor.innerHTML = itemsFiltrados.map(g => `
+                    <div class="bg-darkBg/70 border border-borderGray p-3 rounded-lg flex flex-col gap-2 relative">
+                        <div class="flex justify-between items-start">
+                            <input type="text" value="${g.desc}" onchange="editarGastoObraDirecto('${g.id}', 'desc', this.value)" class="bg-transparent font-medium text-xs text-white border-b border-transparent focus:border-gray-600 focus:outline-none w-3/4">
+                            <button onclick="eliminarGastoObra('${g.id}')" class="text-gray-600 hover:text-red-400 text-xs transition">✕</button>
+                        </div>
+                        <div class="flex items-center gap-1 justify-between">
+                            <span class="text-[10px] text-textGray uppercase">Valor Asignado:</span>
+                            <div class="flex items-center bg-borderGray/40 px-2 py-0.5 rounded border border-gray-800">
+                                <span class="text-xs text-textGray font-mono mr-0.5">$</span>
+                                <input type="number" value="${g.cant}" onchange="editarGastoObraDirecto('${g.id}', 'cant', this.value)" class="bg-transparent font-bold font-mono text-xs text-white text-right focus:outline-none w-24">
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function agregarFilaGasto(cat) {
+            listadoGastosObra.push({ id: `g_${Date.now()}`, cat: cat, desc: "Nuevo Ítem Asignado", cant: 0 });
+            renderizarTodo();
+        }
+
+        function editarGastoObraDirecto(id, campo, valor) {
+            const idx = listadoGastosObra.findIndex(g => g.id === id);
+            if(idx !== -1) {
+                if(campo === 'cant') listadoGastosObra[idx].cant = parseFloat(valor) || 0;
+                else listadoGastosObra[idx][campo] = valor;
+                renderizarTodo();
+            }
+        }
+
+        function eliminarGastoObra(id) {
+            listadoGastosObra = listadoGastosObra.filter(g => g.id !== id);
+            renderizarTodo();
+        }
+
+        // ESCUELA SABÁTICA
+        function renderizarModuloMateriales() {
+            const tbody = document.getElementById('lista-pedidos-body');
+            if(!tbody) return;
+
+            tbody.innerHTML = listadoPedidosIADPA.map(p => {
+                let totalPedido = 0;
+                Object.keys(p.cantidades).forEach(matId => {
+                    let m = CATALOGO_MATERIALES.find(c => c.id === matId);
+                    if(m) totalPedido += (p.cantidades[matId] * m.precio);
+                });
+
+                return `
+                    <tr class="hover:bg-borderGray/30 cursor-pointer transition" onclick="cargarRemisionFactura('${p.id}')">
+                        <td class="py-3 px-1 font-bold text-white">📖 ${p.iglesia}</td>
+                        <td class="py-3 text-textGray text-xs">${p.trimestre}</td>
+                        <td class="py-3 text-right font-mono font-bold text-accentGold">$${totalPedido.toLocaleString('es-CO')}</td>
+                        <td class="py-3 text-center no-print" onclick="event.stopPropagation();">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="abrirModalPedido('${p.id}')" class="text-xs bg-gray-800 hover:bg-gray-700 text-white px-2 py-1 rounded border border-gray-700">Editar</button>
+                                <button onclick="eliminarPedido('${p.id}')" class="text-xs bg-red-950/40 border border-red-900/30 text-red-400 px-2 py-1 rounded">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if(pedidoSeleccionadoId) cargarRemisionFactura(pedidoSeleccionadoId);
+        }
+
+        function cargarRemisionFactura(id) {
+            pedidoSeleccionadoId = id;
+            const ped = listadoPedidosIADPA.find(p => p.id === id);
+            if(!ped) return;
+
+            document.getElementById('remision-trimestre').innerText = ped.trimestre;
+            document.getElementById('remision-iglesia').innerText = ped.iglesia;
+
+            const tbodyTabla = document.getElementById('remision-tabla-items');
+            let totalGeneral = 0;
+            let htmlFilas = "";
+
+            Object.keys(ped.cantidades).forEach(matId => {
+                let cant = ped.cantidades[matId];
+                if(cant > 0) {
+                    let m = CATALOGO_MATERIALES.find(c => c.id === matId);
+                    if(m) {
+                        let sub = cant * m.precio;
+                        totalGeneral += sub;
+                        htmlFilas += `
+                            <tr class="border-b border-gray-300 text-gray-900">
+                                <td class="p-2 border border-gray-300">${m.nombre}</td>
+                                <td class="p-2 border border-gray-300 text-center font-bold">${cant}</td>
+                                <td class="p-2 border border-gray-300 text-right font-mono">$${m.precio.toLocaleString('es-CO')}</td>
+                                <td class="p-2 border border-gray-300 text-right font-mono font-bold">$${sub.toLocaleString('es-CO')}</td>
+                            </tr>
+                        `;
+                    }
+                }
+            });
+
+            htmlFilas += `
+                <tr class="bg-gray-100 font-extrabold text-black text-sm">
+                    <td colspan="3" class="p-2 border border-gray-300 text-right uppercase">Total Remisión:</td>
+                    <td class="p-2 border border-gray-300 text-right font-mono text-base font-black">$${totalGeneral.toLocaleString('es-CO')}</td>
+                </tr>
+            `;
+            tbodyTabla.innerHTML = htmlFilas;
+        }
+
+        function abrirModalPedido(id = null) {
+            idEdicionIADPA = id;
+            const inputsContenedor = document.getElementById('modal-pedido-inputs-materiales');
+            
+            if(id) {
+                document.getElementById('modal-pedido-titulo').innerText = "Modificar Pedido Distrital";
+                const ped = listadoPedidosIADPA.find(p => p.id === id);
+                document.getElementById('ped-iglesia').value = ped.iglesia;
+                document.getElementById('ped-trimestre').value = ped.trimestre;
+
+                inputsContenedor.innerHTML = CATALOGO_MATERIALES.map(m => {
+                    let cantActual = ped.cantidades[m.id] || 0;
+                    return `
+                        <div class="flex justify-between items-center bg-darkBg/40 px-3 py-1.5 rounded-lg border border-borderGray/60">
+                            <span class="text-xs text-gray-300">${m.nombre}</span>
+                            <input type="number" data-matid="${m.id}" value="${cantActual}" min="0" class="w-16 bg-borderGray border border-gray-700 rounded px-2 py-0.5 text-center text-xs font-bold text-white">
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                document.getElementById('modal-pedido-titulo').innerText = "Registrar Nuevo Pedido Distrital";
+                inputsContenedor.innerHTML = CATALOGO_MATERIALES.map(m => `
+                    <div class="flex justify-between items-center bg-darkBg/40 px-3 py-1.5 rounded-lg border border-borderGray/60">
+                        <span class="text-xs text-gray-300">${m.nombre}</span>
+                        <input type="number" data-matid="${m.id}" value="0" min="0" class="w-16 bg-borderGray border border-gray-700 rounded px-2 py-0.5 text-center text-xs font-bold text-white">
+                    </div>
+                `).join('');
+            }
+            document.getElementById('modalPedido').classList.remove('hidden');
+            document.getElementById('modalPedido').classList.add('flex');
+        }
+
+        function cerrarModalPedido() { document.getElementById('modalPedido').classList.replace('flex', 'hidden'); }
+
+        function guardarPedido(e) {
+            e.preventDefault();
+            const igl = document.getElementById('ped-iglesia').value;
+            const trim = document.getElementById('ped-trimestre').value;
+
+            let cants = {};
+            document.querySelectorAll('#modal-pedido-inputs-materiales input').forEach(inp => {
+                cants[inp.getAttribute('data-matid')] = parseInt(inp.value) || 0;
+            });
+
+            if(idEdicionIADPA) {
+                const idx = listadoPedidosIADPA.findIndex(p => p.id === idEdicionIADPA);
+                if(idx !== -1) {
+                    listadoPedidosIADPA[idx].iglesia = igl;
+                    listadoPedidosIADPA[idx].trimestre = trim;
+                    listadoPedidosIADPA[idx].cantidades = cants;
+                }
+            } else {
+                const nuevoId = `ped_${Date.now()}`;
+                listadoPedidosIADPA.push({ id: nuevoId, iglesia: igl, trimestre: trim, cantidades: cants });
+                pedidoSeleccionadoId = nuevoId;
+            }
+            cerrarModalPedido();
+            renderizarTodo();
+        }
+
+        function eliminarPedido(id) {
+            listadoPedidosIADPA = listadoPedidosIADPA.filter(p => p.id !== id);
+            if(pedidoSeleccionadoId === id) {
+                pedidoSeleccionadoId = listadoPedidosIADPA.length > 0 ? listadoPedidosIADPA[0].id : null;
+            }
+            renderizarTodo();
+        }
+
+        // CONTROL MATEMÁTICO DE CARTERAS Y PRÉSTAMOS
+        function renderizarModuloPrestamos() {
+            let totalFondo = 50000000; 
+            let totalColocado = listadoPrestamos.reduce((acc, p) => acc + p.valor, 0);
+            let saldoDisponible = totalFondo - totalColocado;
+
+            document.getElementById('resumen-fondo-total').innerText = `$${totalFondo.toLocaleString('es-CO')}`;
+            document.getElementById('resumen-cartera-prestada').innerText = `$${totalColocado.toLocaleString('es-CO')}`;
+            document.getElementById('resumen-saldo-disponible').innerText = `$${saldoDisponible.toLocaleString('es-CO')}`;
+
+            const contenedor = document.getElementById('contenedor-tarjetas-prestamos');
+            if(!contenedor) return;
+
+            if(listadoPrestamos.length === 0) {
+                contenedor.innerHTML = `<p class="text-xs text-textGray italic col-span-2">No hay créditos activos registrados en el distrito.</p>`;
+                return;
+            }
+
+            contenedor.innerHTML = listadoPrestamos.map(p => {
+                // Cálculo de cuotas mensuales con interés simple integrado
+                let interesTotal = p.valor * (p.interes / 100) * p.meses;
+                let granTotal = p.valor + interesTotal;
+                let cuotaMensual = p.meses > 0 ? Math.round(granTotal / p.meses) : 0;
+
+                return `
+                    <div class="bg-darkBg/60 border border-borderGray p-4 rounded-xl flex flex-col gap-3 relative hover:border-gray-700 transition">
+                        <div class="flex justify-between items-center border-b border-borderGray/60 pb-2">
+                            <div>
+                                <h4 class="text-xs font-bold text-white">⛪ Iglesia: ${p.iglesia}</h4>
+                                <span class="text-[10px] text-textGray font-mono">ID Crédito: ${p.id}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="cargarPrestamoParaEditar('${p.id}')" class="text-xs text-amber-400 hover:underline">Editar</button>
+                                <button onclick="eliminarPrestamo('${p.id}')" class="text-xs text-red-400 hover:underline">✕</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <span class="text-[10px] text-textGray block">Capital Otorgado</span>
+                                <span class="font-extrabold text-white">$${p.valor.toLocaleString('es-CO')}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-textGray block">Cuota Mensual</span>
+                                <span class="font-extrabold text-emerald-400">$${cuotaMensual.toLocaleString('es-CO')}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-textGray block">Plazo Pactado</span>
+                                <span class="font-medium text-white">${p.meses} Meses</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-textGray block">Tasa Interés</span>
+                                <span class="font-medium text-amber-500">${p.interes}% Mensual</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function abrirModalPrestamo() {
+            idPrestamoEdicion = null;
+            document.getElementById('titulo-modal-prestamo').innerText = "Asignar Préstamo Financiero";
+            document.getElementById('p-valor').value = "";
+            document.getElementById('p-meses').value = "";
+            document.getElementById('p-interes').value = "0";
+            document.getElementById('modalPrestamo').classList.replace('hidden', 'flex');
+        }
+
+        function cargarPrestamoParaEditar(id) {
+            idPrestamoEdicion = id;
+            const p = listadoPrestamos.find(item => item.id === id);
+            if(!p) return;
+
+            document.getElementById('titulo-modal-prestamo').innerText = "Modificar Plan de Préstamo";
+            document.getElementById('p-iglesia').value = p.iglesia;
+            document.getElementById('p-valor').value = p.valor;
+            document.getElementById('p-meses').value = p.meses;
+            document.getElementById('p-interes').value = p.interes;
+
+            document.getElementById('modalPrestamo').classList.replace('hidden', 'flex');
+        }
+
+        function cerrarModalPrestamo() { document.getElementById('modalPrestamo').classList.replace('flex', 'hidden'); }
+
+        function guardarPrestamo(e) {
+            e.preventDefault();
+            const datos = {
+                iglesia: document.getElementById('p-iglesia').value,
+                valor: parseFloat(document.getElementById('p-valor').value) || 0,
+                meses: parseInt(document.getElementById('p-meses').value) || 1,
+                interes: parseFloat(document.getElementById('p-interes').value) || 0
+            };
+
+            if(idPrestamoEdicion) {
+                const idx = listadoPrestamos.findIndex(p => p.id === idPrestamoEdicion);
+                if(idx !== -1) listadoPrestamos[idx] = { id: idPrestamoEdicion, ...datos };
+            } else {
+                listadoPrestamos.push({ id: `p_${Date.now()}`, ...datos });
+            }
+
+            cerrarModalPrestamo();
+            renderizarTodo();
+        }
+
+        function eliminarPrestamo(id) {
+            listadoPrestamos = listadoPrestamos.filter(p => p.id !== id);
+            renderizarTodo();
+        }
+
+        // CONTROL DE FELIGRESÍA Y VISITAS (RECONSTRUIDO Y EDITABLE)
+        function renderizarModuloMiembrosYGP() {
+            const selGP = document.getElementById('m-gp');
+            if(selGP) {
+                selGP.innerHTML = `<option value="Ninguno">Ninguno (Sin Asignar)</option>` + 
+                    gruposPequeños.map(gp => `<option value="${escaparHTML(gp)}">${escaparHTML(gp)}</option>`).join('');
+            }
+
+            const miembrosFiltrados = filtroIglesiaMiembros === "Todas"
+                ? listadoMiembros
+                : listadoMiembros.filter(m => m.iglesia === filtroIglesiaMiembros);
+            const textoFiltro = filtroIglesiaMiembros === "Todas" ? "Distrito" : filtroIglesiaMiembros;
+
+            document.getElementById('badge-contador-feligreses').innerText = `${miembrosFiltrados.length} de ${listadoMiembros.length} Registrados · ${textoFiltro}`;
+
+            const contenedorTarjetas = document.getElementById('listado-tarjetas-feligresia');
+            if(contenedorTarjetas) {
+                if(miembrosFiltrados.length === 0) {
+                    const mensaje = filtroIglesiaMiembros === "Todas"
+                        ? "No hay miembros registrados."
+                        : `No hay miembros registrados para ${escaparHTML(filtroIglesiaMiembros)}.`;
+                    contenedorTarjetas.innerHTML = `<p class="text-xs text-textGray italic md:col-span-2">${mensaje}</p>`;
+                } else {
+                    contenedorTarjetas.innerHTML = miembrosFiltrados.map(m => {
+                        let badgeColor = "bg-gray-800 text-gray-300 border-gray-700";
+                        if(m.tipo === "Visita") badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                        if(m.tipo === "Miembro Activo") badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                        if(m.tipo === "Recién Bautizado") badgeColor = "bg-cyan-500/10 text-cyan-400 border-cyan-500/20";
+                        const nombre = escaparHTML(m.nombre);
+                        const cargo = escaparHTML(m.cargo);
+                        const iglesia = escaparHTML(m.iglesia);
+                        const tipo = escaparHTML(m.tipo);
+                        const gp = escaparHTML(m.gp);
+
+                        let infoVisitaHTML = "";
+                        if(m.fechaVisita) {
+                            const etiquetaSeguimiento = m.tipo === "Visita" ? "Visita" : "Seguimiento";
+                            infoVisitaHTML = `
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-[11px]">
+                                    <span class="text-textGray">Método: <strong class="text-amber-400">${escaparHTML(m.medioContacto || 'No definido')}</strong></span>
+                                    <span class="text-textGray">${etiquetaSeguimiento}: <strong class="text-white">${escaparHTML(m.fechaVisita)}</strong></span>
+                                    <span class="text-purple-400 font-medium">⏰ Próximo Control: ${escaparHTML(m.fechaProxima)}</span>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="bg-cardBg border border-borderGray px-4 py-3 rounded-lg shadow-sm hover:border-gray-700 transition flex flex-col lg:flex-row lg:items-center gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-white text-sm">${nombre}</h4>
+                                    <span class="text-xs text-textGray">${cargo} — ⛪ ${iglesia}</span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 lg:w-72">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${badgeColor}">${tipo}</span>
+                                    <span class="text-[10px] bg-purple-950/40 border border-purple-900/30 text-purple-300 font-medium px-2 py-0.5 rounded">GP: ${gp}</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    ${infoVisitaHTML || '<span class="text-[11px] text-textGray italic">Sin seguimiento registrado</span>'}
+                                </div>
+                                <div class="flex items-center justify-end gap-2">
+                                    <button onclick="cargarMiembroParaEditar(${argumentoJS(m.id)})" class="text-xs bg-borderGray px-2 py-1 rounded hover:bg-gray-700 text-amber-400">✏️</button>
+                                    <button onclick="eliminarMiembro(${argumentoJS(m.id)})" class="text-xs bg-borderGray px-2 py-1 rounded hover:bg-gray-700 text-red-400">✕</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Misión 7-70
+            const htmlBloquesGP = gruposPequeños.map(gp => {
+                let integrantes = listadoMiembros.filter(m => m.gp === gp);
+                let cantVisitas = integrantes.filter(m => m.tipo === "Visita").length;
+                let cantBautismos = integrantes.filter(m => m.tipo === "Recién Bautizado").length;
+                let nombresIntegrantes = integrantes.length > 0 ? integrantes.map(i => escaparHTML(i.nombre)).join(', ') : 'Ninguno asignado';
+
+                return `
+                    <div class="bg-cardBg border border-borderGray p-4 rounded-xl flex flex-col gap-2 relative shadow-md">
+                        <div class="flex justify-between items-center border-b border-borderGray/60 pb-1">
+                            <span class="text-xs font-black text-purple-300">👥 GP: ${escaparHTML(gp)}</span>
+                            <button onclick="eliminarGP(${argumentoJS(gp)})" class="text-[10px] text-gray-600 hover:text-red-400">✕</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[10px] bg-darkBg/40 p-1.5 rounded border border-gray-800/60 font-mono">
+                            <div><span class="text-textGray block">Total</span><span class="font-bold text-white">${integrantes.length}</span></div>
+                            <div><span class="text-amber-400 block">Visitas</span><span class="font-bold text-amber-400">${cantVisitas}</span></div>
+                            <div><span class="text-cyan-400 block">Bautismos</span><span class="font-bold text-cyan-400">${cantBautismos}</span></div>
+                        </div>
+                        <div class="text-[11px] text-textGray">
+                            <span class="font-bold block text-white mb-1 text-[10px]">Integrantes vinculados:</span>
+                            <p class="truncate text-gray-400">${nombresIntegrantes}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const contenedorMision = document.getElementById('contenedor-lista-gp-mision');
+            if (contenedorMision) contenedorMision.innerHTML = htmlBloquesGP;
+        }
+
+        function abrirModalMiembro() {
+            const modal = document.getElementById('modalMiembro');
+            if(!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function cerrarModalMiembro() {
+            const modal = document.getElementById('modalMiembro');
+            if(!modal) return;
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function abrirModalMiembroNuevo() {
+            limpiarFormularioMiembros();
+            abrirModalMiembro();
+        }
+
+        function alternarCamposVisita(val) {
+            const divs = document.getElementById('campos-visita-adicionales');
+            const fechaVisita = document.getElementById('m-fecha-visita');
+            const textoAyuda = document.getElementById('texto-ayuda-visita');
+            if(!divs) return;
+            divs.classList.remove('hidden');
+            if(val === "Visita") {
+                if(fechaVisita) fechaVisita.required = true;
+                if(textoAyuda) textoAyuda.innerText = "Las visitas requieren fecha; el sistema programará el próximo control 20 días después.";
+            } else {
+                if(fechaVisita) fechaVisita.required = false;
+                if(textoAyuda) textoAyuda.innerText = "Opcional: registra aquí un seguimiento por llamada, WhatsApp o visita personal.";
+            }
+        }
+
+        function cargarMiembroParaEditar(id) {
+            idMiembroEdicion = id;
+            const m = listadoMiembros.find(item => item.id === id);
+            if(!m) return;
+
+            document.getElementById('titulo-form-miembros').innerText = "Editar Feligrés / Visita";
+            document.getElementById('btn-guardar-miembro').innerText = "Actualizar Registro";
+            
+            document.getElementById('m-nombre').value = m.nombre;
+            document.getElementById('m-iglesia').value = m.iglesia;
+            document.getElementById('m-gp').value = m.gp;
+            document.getElementById('m-cargo').value = m.cargo;
+            document.getElementById('m-tipo').value = m.tipo;
+            
+            alternarCamposVisita(m.tipo);
+            document.getElementById('m-fecha-visita').value = m.fechaVisita || "";
+            document.getElementById('m-medio-contacto').value = m.medioContacto || "Visita Personal";
+            abrirModalMiembro();
+        }
+
+        function limpiarFormularioMiembros() {
+            idMiembroEdicion = null;
+            document.getElementById('titulo-form-miembros').innerText = "Registrar Feligrés / Visita";
+            document.getElementById('btn-guardar-miembro').innerText = "Guardar Registro";
+            document.getElementById('m-nombre').value = "";
+            document.getElementById('m-iglesia').selectedIndex = 0;
+            document.getElementById('m-gp').value = "Ninguno";
+            document.getElementById('m-cargo').value = "";
+            document.getElementById('m-tipo').value = "Miembro";
+            document.getElementById('m-fecha-visita').value = "";
+            document.getElementById('m-medio-contacto').value = "Visita Personal";
+            alternarCamposVisita("Miembro");
+        }
+
+        async function guardarMiembro(e) {
+            e.preventDefault();
+            const tipo = document.getElementById('m-tipo').value;
+            const nombre = document.getElementById('m-nombre').value.trim();
+            const cargo = document.getElementById('m-cargo').value.trim() || 'Miembro';
+            let fechaV = "";
+            let medioC = "";
+            let fechaProx = "";
+
+            if(!nombre) {
+                alert("Ingresa el nombre completo del feligrés o visitante.");
+                return;
+            }
+
+            fechaV = document.getElementById('m-fecha-visita').value;
+            medioC = fechaV ? document.getElementById('m-medio-contacto').value : "";
+
+            if (tipo === "Visita") {
+                if(!fechaV) {
+                    alert("Las visitas deben tener fecha de ejecución para calcular el próximo control.");
+                    return;
+                }
+            }
+
+            if (fechaV) {
+                let d = new Date(fechaV + 'T00:00:00');
+                d.setDate(d.getDate() + 20); // Sumar 20 días reglamentarios exactos
+                
+                let yyyy = d.getFullYear();
+                let mm = String(d.getMonth() + 1).padStart(2, '0');
+                let dd = String(d.getDate()).padStart(2, '0');
+                fechaProx = `${yyyy}-${mm}-${dd}`;
+            }
+
+            const datosMiembro = {
+                nombre: nombre,
+                iglesia: document.getElementById('m-iglesia').value,
+                gp: document.getElementById('m-gp').value,
+                cargo: cargo,
+                tipo: tipo,
+                fechaVisita: fechaV,
+                medioContacto: medioC,
+                fechaProxima: fechaProx
+            };
+
+            if(idMiembroEdicion) {
+                const idx = listadoMiembros.findIndex(m => m.id === idMiembroEdicion);
+                if(idx !== -1) listadoMiembros[idx] = { id: idMiembroEdicion, ...datosMiembro };
+            } else {
+                listadoMiembros.push({ id: `m_${Date.now()}`, ...datosMiembro });
+            }
+
+            await guardarEstadoFeligresia();
+            limpiarFormularioMiembros();
+            cerrarModalMiembro();
+            renderizarTodo();
+        }
+
+        async function eliminarMiembro(id) {
+            listadoMiembros = listadoMiembros.filter(m => m.id !== id);
+            await guardarEstadoFeligresia();
+            renderizarTodo();
+        }
+
+        function abrirModalGP() { document.getElementById('modalGP').classList.remove('hidden'); }
+        function cerrarModalGP() { document.getElementById('modalGP').classList.add('hidden'); document.getElementById('gp-nombre').value = ''; }
+        async function guardarGP(e) {
+            e.preventDefault();
+            const n = document.getElementById('gp-nombre').value.trim();
+            if(n && !gruposPequeños.includes(n)) gruposPequeños.push(n);
+            await guardarEstadoFeligresia();
+            cerrarModalGP();
+            renderizarTodo();
+        }
+
+        async function eliminarGP(gpNombre) {
+            gruposPequeños = gruposPequeños.filter(gp => gp !== gpNombre);
+            listadoMiembros.forEach(m => { if(m.gp === gpNombre) m.gp = "Ninguno"; });
+            await guardarEstadoFeligresia();
+            renderizarTodo();
+        }
+    </script>
+</body>
+</html>
