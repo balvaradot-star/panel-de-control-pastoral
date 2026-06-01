@@ -210,6 +210,40 @@
       font-size: 14px;
     }
 
+    .sync-status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 10px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .sync-status[data-status="online"] {
+      border-color: rgba(31, 122, 69, 0.28);
+      background: rgba(31, 122, 69, 0.09);
+      color: var(--ok);
+    }
+
+    .sync-status[data-status="syncing"] {
+      border-color: rgba(154, 103, 0, 0.26);
+      background: rgba(154, 103, 0, 0.09);
+      color: var(--warn);
+    }
+
+    .sync-status[data-status="local"],
+    .sync-status[data-status="error"] {
+      border-color: rgba(180, 35, 24, 0.22);
+      background: rgba(180, 35, 24, 0.08);
+      color: var(--danger);
+    }
+
     .toolbar {
       display: flex;
       gap: 8px;
@@ -483,6 +517,23 @@
       gap: 10px;
     }
 
+    input[type="date"] {
+      min-width: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      line-height: 42px;
+      overflow: visible;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value {
+      min-height: 1.5em;
+      text-align: left;
+    }
+
+    .baptism-row {
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+    }
+
     .btn {
       min-height: 40px;
       border: 1px solid transparent;
@@ -663,6 +714,7 @@
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .chart-grid { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
+      .baptism-row { grid-template-columns: 1fr; }
       .visit-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .visit-form-grid .wide { grid-column: span 2; }
       .work-controls { grid-template-columns: 1fr; }
@@ -765,6 +817,9 @@
       .btn {
         min-height: 38px;
         font-size: 14px;
+      }
+      input[type="date"] {
+        line-height: 38px;
       }
       label { font-size: 12px; }
       .control-block {
@@ -914,6 +969,7 @@
         <div>
           <h1 id="pageTitle">Dashboard pastoral</h1>
           <p class="subtitle" id="pageSubtitle">Resumen de iglesias, miembros, visitas y presupuesto de obra.</p>
+          <span class="sync-status" id="syncStatus" data-status="local">Modo local</span>
         </div>
         <div class="toolbar">
           <button class="btn secondary" type="button" id="logoutBtn">Cerrar sesion</button>
@@ -1063,7 +1119,7 @@
           <div class="panel">
             <div class="panel-head"><h2>Nuevo bautismo</h2></div>
             <form id="baptismForm">
-              <div class="row">
+              <div class="row baptism-row">
                 <label>Iglesia<select id="baptismChurch" required></select></label>
                 <label>Fecha<input type="date" id="baptismDate" required></label>
               </div>
@@ -1317,12 +1373,27 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { doc, enableIndexedDbPersistence, getDoc, getFirestore, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
     const STORAGE_KEY = 'pDB';
     const AUTH_KEY = 'pastoralAuth';
     const USERS_KEY = 'pastoralUsers';
     const LOGIN_USER = 'admin';
     const LOGIN_PASS = 'pastoral2026';
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBAGclyYUjfYcJkbDcJ_2eW0YGjvJbBGa0',
+      authDomain: 'panel-de-control-pastoral.firebaseapp.com',
+      projectId: 'panel-de-control-pastoral',
+      storageBucket: 'panel-de-control-pastoral.firebasestorage.app',
+      messagingSenderId: '44584200323',
+      appId: '1:44584200323:web:310b264697212afce153b6'
+    };
+    const firebaseApp = initializeApp(firebaseConfig);
+    const firebaseAuth = getAuth(firebaseApp);
+    const firestore = getFirestore(firebaseApp);
     const ORDER_TEMPLATE = [
       ['Guia adulto ALUMNO', 7300],
       ['Guia adulto ALUMNO EN INGLES', 7900],
@@ -1357,6 +1428,11 @@
     ];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    try {
+      enableIndexedDbPersistence(firestore).catch(() => {});
+    } catch (error) {
+      console.warn('Persistencia local de Firebase no disponible.', error);
+    }
 
     const state = {
       filters: {
@@ -1388,6 +1464,16 @@
     }
 
     let db = normalizeDb(storedDb);
+    let currentFirebaseUser = null;
+    let cloudReady = false;
+    let cloudSaveTimer = null;
+
+    function setSyncStatus(status, message) {
+      const el = document.getElementById('syncStatus');
+      if (!el) return;
+      el.dataset.status = status;
+      el.textContent = message;
+    }
 
     function getUsers() {
       let users = [{ username: LOGIN_USER, password: LOGIN_PASS }];
@@ -1564,12 +1650,75 @@
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(value || 0));
     }
 
+    function getCloudDocRef(user = currentFirebaseUser) {
+      return user ? doc(firestore, 'pastoral', user.uid, 'control', 'main') : null;
+    }
+
+    async function loadCloudData(user) {
+      const ref = getCloudDocRef(user);
+      if (!ref) return;
+
+      try {
+        const snapshot = await getDoc(ref);
+        if (snapshot.exists()) {
+          const cloudData = snapshot.data();
+          db = normalizeDb(cloudData.db || cloudData);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+          cloudReady = true;
+          render();
+          setSyncStatus('online', `Firebase conectado: ${user.email || 'usuario'}`);
+          toast('Datos sincronizados con Firebase.');
+          return;
+        }
+
+        cloudReady = true;
+        await setDoc(ref, {
+          db,
+          ownerUid: user.uid,
+          ownerEmail: user.email || '',
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        setSyncStatus('online', `Firebase conectado: ${user.email || 'usuario'}`);
+        toast('Tus datos locales fueron subidos a Firebase.');
+      } catch (error) {
+        cloudReady = false;
+        setSyncStatus('error', 'Error al sincronizar Firebase');
+        console.warn('No se pudo cargar Firebase.', error);
+        toast('Entraste en modo local. Revisa la conexion o las reglas de Firebase.');
+      }
+    }
+
+    function saveCloudData() {
+      if (!currentFirebaseUser || !cloudReady) return;
+      setSyncStatus('syncing', 'Sincronizando con Firebase...');
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(async () => {
+        const ref = getCloudDocRef();
+        if (!ref) return;
+
+        try {
+          await setDoc(ref, {
+            db,
+            ownerUid: currentFirebaseUser.uid,
+            ownerEmail: currentFirebaseUser.email || '',
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+          setSyncStatus('online', `Firebase conectado: ${currentFirebaseUser.email || 'usuario'}`);
+        } catch (error) {
+          console.warn('No se pudo sincronizar Firebase.', error);
+          setSyncStatus('error', 'Error al sincronizar Firebase');
+          toast('Guardado local. Firebase no sincronizo.');
+        }
+      }, 500);
+    }
+
     function save(message) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       } catch (error) {
         console.warn('No se pudo guardar en este navegador.', error);
       }
+      saveCloudData();
       render();
       if (message) toast(message);
     }
@@ -1626,6 +1775,7 @@
       document.getElementById('pageSubtitle').textContent = section.dataset.subtitle;
       document.getElementById('exportBtn').textContent = id === 'construccion' ? 'Exportar reporte PDF' : 'Exportar datos';
     }
+    window.show = show;
 
     function includesText(values, filter) {
       return values.join(' ').toLowerCase().includes(filter.trim().toLowerCase());
@@ -2188,19 +2338,31 @@
       if (button) show(button.dataset.id);
     });
 
-    document.getElementById('loginForm').addEventListener('submit', event => {
+    document.getElementById('loginForm').addEventListener('submit', async event => {
       event.preventDefault();
+      const form = event.currentTarget;
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
+      const loginError = document.getElementById('loginError');
+      loginError.textContent = '';
+
+      try {
+        await signInWithEmailAndPassword(firebaseAuth, user, pass);
+        form.reset();
+        return;
+      } catch (error) {
+        console.warn('Inicio con Firebase no disponible.', error);
+      }
 
       if (validCredentials(user, pass)) {
-        event.currentTarget.reset();
+        form.reset();
         setAuthenticated(true);
-        toast('Bienvenido a Control Pastoral.');
+        setSyncStatus('local', 'Modo local: no sincroniza Firebase');
+        toast('Bienvenido a Control Pastoral en modo local.');
         return;
       }
 
-      document.getElementById('loginError').textContent = 'Usuario o contrasena incorrectos.';
+      loginError.textContent = 'Correo o contrasena incorrectos.';
     });
 
     document.getElementById('registerUserForm').addEventListener('submit', event => {
@@ -2228,6 +2390,10 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(firebaseAuth).catch(error => console.warn('No se pudo cerrar Firebase.', error));
+      currentFirebaseUser = null;
+      cloudReady = false;
+      setSyncStatus('local', 'Modo local');
       setAuthenticated(false);
       show('dash');
     });
@@ -2855,7 +3021,25 @@
       event.target.value = '';
     });
 
+    onAuthStateChanged(firebaseAuth, user => {
+      currentFirebaseUser = user;
+      cloudReady = false;
+
+      if (!user) {
+        if (!isAuthenticated()) {
+          setAuthenticated(false);
+          setSyncStatus('local', 'Modo local');
+        }
+        return;
+      }
+
+      setAuthenticated(true);
+      setSyncStatus('syncing', 'Conectando con Firebase...');
+      loadCloudData(user);
+    });
+
     setAuthenticated(isAuthenticated());
+    setSyncStatus(isAuthenticated() ? 'local' : 'local', isAuthenticated() ? 'Modo local: no sincroniza Firebase' : 'Modo local');
     save();
   </script>
 </body>
