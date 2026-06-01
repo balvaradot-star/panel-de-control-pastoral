@@ -1671,6 +1671,8 @@
           return;
         }
 
+        db = normalizeDb({});
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
         cloudReady = true;
         await setDoc(ref, {
           db,
@@ -1678,8 +1680,9 @@
           ownerEmail: user.email || '',
           updatedAt: new Date().toISOString()
         }, { merge: true });
+        render();
         setSyncStatus('online', `Firebase conectado: ${user.email || 'usuario'}`);
-        toast('Tus datos locales fueron subidos a Firebase.');
+        toast('Cuenta Firebase iniciada con datos limpios.');
       } catch (error) {
         cloudReady = false;
         setSyncStatus('error', 'Error al sincronizar Firebase');
