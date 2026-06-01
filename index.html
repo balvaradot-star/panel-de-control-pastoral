@@ -930,6 +930,8 @@
         <label>Contrasena<input id="loginPass" type="password" autocomplete="current-password" required></label>
         <p class="login-error" id="loginError"></p>
         <button class="btn" type="submit">Entrar a la plataforma</button>
+        <button class="btn secondary" type="button" id="resetPasswordBtn">Recuperar contrasena</button>
+        <p class="hint">Si olvidaste el correo, revisalo en Firebase Authentication &gt; Usuarios.</p>
       </form>
       <hr class="login-divider">
       <h2>Registrar nuevo usuario Firebase</h2>
@@ -960,6 +962,7 @@
         <button class="nav-btn" type="button" data-id="construccion" onclick="show('construccion')"><span class="nav-icon">OB</span><span>Obra</span></button>
         <button class="nav-btn" type="button" data-id="materiales" onclick="show('materiales')"><span class="nav-icon">MA</span><span>Materiales</span></button>
         <button class="nav-btn" type="button" data-id="grupos" onclick="show('grupos')"><span class="nav-icon">GP</span><span>Grupos</span></button>
+        <button class="nav-btn" type="button" data-id="prestamos" onclick="show('prestamos')"><span class="nav-icon">PR</span><span>Prestamos</span></button>
       </nav>
       <div class="credits">Disenado por<br><strong>Bladimir Alvarado</strong></div>
     </aside>
@@ -1346,6 +1349,66 @@
           </div>
         </div>
       </section>
+
+      <section id="prestamos" class="section" data-title="Prestamos" data-subtitle="Controla prestamos por iglesia, intereses, abonos mensuales y saldo pendiente.">
+        <div class="metrics">
+          <div class="metric"><span>Total prestado</span><strong id="loanTotal">$0</strong><small>Capital registrado</small></div>
+          <div class="metric"><span>Interes estimado</span><strong id="loanInterestTotal">$0</strong><small>Segun meses pactados</small></div>
+          <div class="metric"><span>Total abonado</span><strong id="loanPaidTotal">$0</strong><small>Pagos recibidos</small></div>
+          <div class="metric"><span>Saldo pendiente</span><strong id="loanBalanceTotal">$0</strong><small>Por pagar</small></div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head"><h2>Nuevo prestamo</h2></div>
+            <form id="loanForm">
+              <label>Iglesia<select id="loanChurch"></select></label>
+              <label>Descripcion<input id="loanName" placeholder="Ej. Prestamo remodelacion"></label>
+              <div class="form-row">
+                <label>Monto<input id="loanAmount" type="number" min="0" step="1"></label>
+                <label>Interes mensual (%)<input id="loanInterest" type="number" min="0" step="0.01" placeholder="Ej. 2"></label>
+              </div>
+              <label>Meses del prestamo<input id="loanMonths" type="number" min="1" step="1" placeholder="Ej. 12"></label>
+              <button class="btn" type="submit">Registrar prestamo</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Registrar abono</h2></div>
+            <form id="loanPaymentForm">
+              <label>Prestamo<select id="loanPaymentLoan"></select></label>
+              <div class="form-row">
+                <label>Mes del abono<input id="loanPaymentMonth" type="month"></label>
+                <label>Valor abonado<input id="loanPaymentAmount" type="number" min="0" step="1"></label>
+              </div>
+              <button class="btn" type="submit">Guardar abono</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Prestamos por iglesia</h2>
+            <select id="loanChurchFilter"></select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Iglesia</th><th>Prestamo</th><th>Monto</th><th>Interes</th><th>Meses</th><th>Abonado</th><th>Saldo</th><th>Acciones</th></tr></thead>
+              <tbody id="loanRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Historial de abonos</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Iglesia</th><th>Prestamo</th><th>Mes</th><th>Abono</th><th>Acciones</th></tr></thead>
+              <tbody id="loanPaymentRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -1375,7 +1438,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
     import { doc, enableIndexedDbPersistence, getDoc, getFirestore, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
     const STORAGE_KEY = 'pDB';
@@ -1445,7 +1508,8 @@
         groups: '',
         materialChurch: '',
         workChurch: '',
-        workId: ''
+        workId: '',
+        loanChurch: ''
       },
       selectedOrderId: '',
       editingExpenseId: '',
@@ -1618,6 +1682,19 @@
           time: item.time || item.hora || '',
           memberIds: item.memberIds || item.miembros || []
         })).filter(item => item.name),
+        prestamos: (raw.prestamos || raw.loans || []).map((item, index) => ({
+          id: item.id || cryptoId('pr', index),
+          churchId: resolveChurch(item.churchId || item.i),
+          name: item.name || item.descripcion || item.concepto || 'Prestamo',
+          amount: Number(item.amount !== undefined && item.amount !== null ? item.amount : (item.monto !== undefined && item.monto !== null ? item.monto : 0)),
+          interest: Number(item.interest !== undefined && item.interest !== null ? item.interest : (item.interes !== undefined && item.interes !== null ? item.interes : 0)),
+          months: Number(item.months !== undefined && item.months !== null ? item.months : (item.meses !== undefined && item.meses !== null ? item.meses : 1)),
+          payments: (item.payments || item.abonos || []).map((payment, paymentIndex) => ({
+            id: payment.id || cryptoId('pa', paymentIndex),
+            month: payment.month || payment.mes || '',
+            amount: Number(payment.amount !== undefined && payment.amount !== null ? payment.amount : (payment.abono !== undefined && payment.abono !== null ? payment.abono : 0))
+          })).filter(payment => payment.amount)
+        })).filter(item => item.churchId && (item.name || item.amount)),
         budget: Number(raw.budget || 0)
       };
     }
@@ -1786,6 +1863,7 @@
         db.materiales = db.materiales.filter(item => item.churchId !== id);
         db.pedidos = db.pedidos.filter(item => item.churchId !== id);
         db.grupos = db.grupos.filter(item => item.churchId !== id);
+        db.prestamos = db.prestamos.filter(item => item.churchId !== id);
         const deletedWorks = db.obras.filter(item => item.churchId === id).map(item => item.id);
         db.obras = db.obras.filter(item => item.churchId !== id);
         db.gastos = db.gastos.filter(item => !deletedWorks.includes(item.workId));
@@ -1793,6 +1871,7 @@
         if (state.filters.visitChurch === id) state.filters.visitChurch = '';
         if (state.filters.baptismChurch === id) state.filters.baptismChurch = '';
         if (state.filters.materialChurch === id) state.filters.materialChurch = '';
+        if (state.filters.loanChurch === id) state.filters.loanChurch = '';
         if (state.filters.workChurch === id) {
           state.filters.workChurch = '';
           state.filters.workId = '';
@@ -1821,6 +1900,7 @@
       renderExpenses();
       renderMaterials();
       renderGroups();
+      renderLoans();
       renderDashboard();
     }
 
@@ -1847,6 +1927,9 @@
       document.getElementById('matChurch').innerHTML = options;
       document.getElementById('orderChurch').innerHTML = options;
       document.getElementById('groupChurch').innerHTML = options;
+      document.getElementById('loanChurch').innerHTML = options;
+      document.getElementById('loanChurchFilter').innerHTML = filterOptions;
+      document.getElementById('loanChurchFilter').value = state.filters.loanChurch;
       document.getElementById('materialChurchFilter').innerHTML = filterOptions;
       document.getElementById('materialChurchFilter').value = state.filters.materialChurch;
       document.getElementById('obraChurchFilter').innerHTML = filterOptions;
@@ -1865,13 +1948,36 @@
       document.getElementById('matChurch').disabled = !db.iglesias.length;
       document.getElementById('orderChurch').disabled = !db.iglesias.length;
       document.getElementById('groupChurch').disabled = !db.iglesias.length;
+      document.getElementById('loanChurch').disabled = !db.iglesias.length;
+      document.getElementById('loanChurchFilter').disabled = !db.iglesias.length;
       renderGroupMemberOptions();
       document.getElementById('materialChurchFilter').disabled = !db.iglesias.length;
       document.getElementById('obraChurchFilter').disabled = !db.iglesias.length;
       document.getElementById('obraFilter').disabled = !visibleWorks.length;
       document.getElementById('workChurch').disabled = !db.iglesias.length;
       document.getElementById('expenseWork').disabled = !db.obras.length;
+      renderLoanOptions();
       renderVisitMemberOptions();
+    }
+
+    function loanInterestAmount(loan) {
+      return Number(loan.amount || 0) * (Number(loan.interest || 0) / 100) * Number(loan.months || 0);
+    }
+
+    function loanPaidAmount(loan) {
+      return (loan.payments || []).reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+    }
+
+    function loanBalanceAmount(loan) {
+      return Math.max(0, Number(loan.amount || 0) + loanInterestAmount(loan) - loanPaidAmount(loan));
+    }
+
+    function renderLoanOptions() {
+      const loans = db.prestamos || [];
+      document.getElementById('loanPaymentLoan').innerHTML = loans
+        .map(loan => `<option value="${loan.id}">${loan.name} - ${getChurchName(loan.churchId)}</option>`)
+        .join('');
+      document.getElementById('loanPaymentLoan').disabled = !loans.length;
     }
 
     function renderVisitMemberOptions() {
@@ -1897,6 +2003,44 @@
         </label>
       `).join('') || `<div class="empty">No hay miembros disponibles para esta iglesia.</div>`;
       document.getElementById('groupMemberCountHint').textContent = `${state.selectedGroupMembers.length} seleccionados`;
+    }
+
+    function renderLoans() {
+      const loans = (db.prestamos || []).filter(loan => !state.filters.loanChurch || loan.churchId === state.filters.loanChurch);
+      const allLoans = db.prestamos || [];
+      const totalAmount = allLoans.reduce((sum, loan) => sum + Number(loan.amount || 0), 0);
+      const totalInterest = allLoans.reduce((sum, loan) => sum + loanInterestAmount(loan), 0);
+      const totalPaid = allLoans.reduce((sum, loan) => sum + loanPaidAmount(loan), 0);
+      const totalBalance = allLoans.reduce((sum, loan) => sum + loanBalanceAmount(loan), 0);
+
+      document.getElementById('loanTotal').textContent = money(totalAmount);
+      document.getElementById('loanInterestTotal').textContent = money(totalInterest);
+      document.getElementById('loanPaidTotal').textContent = money(totalPaid);
+      document.getElementById('loanBalanceTotal').textContent = money(totalBalance);
+
+      document.getElementById('loanRows').innerHTML = loans.map(loan => `
+        <tr>
+          <td>${getChurchName(loan.churchId)}</td>
+          <td>${loan.name}</td>
+          <td>${money(loan.amount)}</td>
+          <td>${loan.interest}% (${money(loanInterestAmount(loan))})</td>
+          <td>${loan.months}</td>
+          <td>${money(loanPaidAmount(loan))}</td>
+          <td>${money(loanBalanceAmount(loan))}</td>
+          <td class="actions"><button class="btn danger" type="button" data-delete="prestamos" data-id="${loan.id}">Eliminar</button></td>
+        </tr>
+      `).join('') || emptyRow('No hay prestamos registrados.', 8);
+
+      const paymentRows = loans.flatMap(loan => (loan.payments || []).map(payment => ({ loan, payment })));
+      document.getElementById('loanPaymentRows').innerHTML = paymentRows.map(({ loan, payment }) => `
+        <tr>
+          <td>${getChurchName(loan.churchId)}</td>
+          <td>${loan.name}</td>
+          <td>${payment.month || 'Sin mes'}</td>
+          <td>${money(payment.amount)}</td>
+          <td class="actions"><button class="btn danger" type="button" data-delete-payment="${loan.id}" data-id="${payment.id}">Eliminar abono</button></td>
+        </tr>
+      `).join('') || emptyRow('Los abonos registrados apareceran aqui.', 5);
     }
 
     function renderChurches() {
@@ -2340,6 +2484,25 @@
       }
     });
 
+    document.getElementById('resetPasswordBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginUser').value.trim();
+      const loginError = document.getElementById('loginError');
+      loginError.textContent = '';
+
+      if (!email) {
+        loginError.textContent = 'Escribe tu correo para enviar la recuperacion.';
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(firebaseAuth, email);
+        toast('Correo de recuperacion enviado.');
+      } catch (error) {
+        console.warn('No se pudo enviar recuperacion.', error);
+        loginError.textContent = 'No se pudo enviar. Revisa que el correo este registrado.';
+      }
+    });
+
     document.getElementById('registerUserForm').addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.currentTarget;
@@ -2610,6 +2773,49 @@
       save('Grupo pequeno guardado.');
     });
 
+    document.getElementById('loanForm').addEventListener('submit', event => {
+      event.preventDefault();
+      if (!hasChurches()) return;
+      const amount = Number(document.getElementById('loanAmount').value || 0);
+      if (!amount) {
+        toast('Ingresa el monto del prestamo.');
+        return;
+      }
+      db.prestamos.push({
+        id: cryptoId('pr', db.prestamos.length),
+        churchId: document.getElementById('loanChurch').value,
+        name: document.getElementById('loanName').value.trim() || 'Prestamo',
+        amount,
+        interest: Number(document.getElementById('loanInterest').value || 0),
+        months: Number(document.getElementById('loanMonths').value || 1),
+        payments: []
+      });
+      event.currentTarget.reset();
+      save('Prestamo registrado.');
+    });
+
+    document.getElementById('loanPaymentForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const loan = db.prestamos.find(item => item.id === document.getElementById('loanPaymentLoan').value);
+      if (!loan) {
+        toast('Primero registra un prestamo.');
+        return;
+      }
+      const amount = Number(document.getElementById('loanPaymentAmount').value || 0);
+      if (!amount) {
+        toast('Ingresa el valor del abono.');
+        return;
+      }
+      loan.payments = loan.payments || [];
+      loan.payments.push({
+        id: cryptoId('pa', loan.payments.length),
+        month: document.getElementById('loanPaymentMonth').value,
+        amount
+      });
+      event.currentTarget.reset();
+      save('Abono de prestamo registrado.');
+    });
+
     document.body.addEventListener('click', event => {
       const viewOrderBtn = event.target.closest('[data-view-order]');
       if (viewOrderBtn) {
@@ -2654,9 +2860,20 @@
         return;
       }
 
+      const deletePaymentBtn = event.target.closest('[data-delete-payment]');
+      if (deletePaymentBtn) {
+        const loan = db.prestamos.find(item => item.id === deletePaymentBtn.dataset.deletePayment);
+        if (!loan) return;
+        if (confirm('Eliminar este abono?')) {
+          loan.payments = (loan.payments || []).filter(payment => payment.id !== deletePaymentBtn.dataset.id);
+          save('Abono eliminado.');
+        }
+        return;
+      }
+
       const btn = event.target.closest('[data-delete]');
       if (!btn) return;
-      const labels = { iglesias: 'iglesia', miembros: 'miembro', visitas: 'visita', bautismos: 'bautismo', gastos: 'gasto', materiales: 'material', grupos: 'grupo pequeno' };
+      const labels = { iglesias: 'iglesia', miembros: 'miembro', visitas: 'visita', bautismos: 'bautismo', gastos: 'gasto', materiales: 'material', grupos: 'grupo pequeno', prestamos: 'prestamo' };
       let confirmation = `Eliminar este ${labels[btn.dataset.delete]}?`;
       if (btn.dataset.delete === 'iglesias') {
         const church = db.iglesias.find(item => item.id === btn.dataset.id);
@@ -2669,6 +2886,7 @@
           db.materiales.filter(item => item.churchId === btn.dataset.id).length +
           db.pedidos.filter(item => item.churchId === btn.dataset.id).length +
           db.grupos.filter(item => item.churchId === btn.dataset.id).length +
+          db.prestamos.filter(item => item.churchId === btn.dataset.id).length +
           works.length +
           db.gastos.filter(item => works.includes(item.workId)).length;
         confirmation = `Eliminar la iglesia ${church ? church.name : ''}? Tambien se eliminaran ${relatedCount} registros relacionados.`;
@@ -2750,6 +2968,7 @@
       renderGroupMemberOptions();
     });
     document.getElementById('materialChurchFilter').addEventListener('change', event => { state.filters.materialChurch = event.target.value; renderMaterials(); });
+    document.getElementById('loanChurchFilter').addEventListener('change', event => { state.filters.loanChurch = event.target.value; renderLoans(); });
     document.getElementById('orderChurch').addEventListener('change', () => renderOrderItems());
     document.getElementById('orderQuarter').addEventListener('change', () => renderOrderItems());
     document.getElementById('loadOrderBtn').addEventListener('click', () => renderOrderItems());
