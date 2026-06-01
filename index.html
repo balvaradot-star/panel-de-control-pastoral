@@ -926,15 +926,15 @@
         </div>
       </div>
       <form id="loginForm">
-        <label>Usuario<input id="loginUser" autocomplete="username" required></label>
+        <label>Correo electronico<input id="loginUser" type="email" autocomplete="username" required></label>
         <label>Contrasena<input id="loginPass" type="password" autocomplete="current-password" required></label>
         <p class="login-error" id="loginError"></p>
         <button class="btn" type="submit">Entrar a la plataforma</button>
       </form>
       <hr class="login-divider">
-      <h2>Registrar nuevo usuario</h2>
+      <h2>Registrar nuevo usuario Firebase</h2>
       <form id="registerUserForm">
-        <label>Nuevo usuario<input id="newUser" autocomplete="username" required></label>
+        <label>Nuevo correo<input id="newUser" type="email" autocomplete="username" required></label>
         <label>Nueva contrasena<input id="newPass" type="password" autocomplete="new-password" required></label>
         <p class="login-error" id="registerError"></p>
         <button class="btn secondary" type="submit">Guardar usuario</button>
@@ -1375,7 +1375,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
     import { doc, enableIndexedDbPersistence, getDoc, getFirestore, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
     const STORAGE_KEY = 'pDB';
@@ -2340,11 +2340,22 @@
       }
     });
 
-    document.getElementById('registerUserForm').addEventListener('submit', event => {
+    document.getElementById('registerUserForm').addEventListener('submit', async event => {
       event.preventDefault();
+      const form = event.currentTarget;
+      const email = document.getElementById('newUser').value.trim();
+      const password = document.getElementById('newPass').value;
       const registerError = document.getElementById('registerError');
-      event.currentTarget.reset();
-      registerError.textContent = 'Crea los usuarios en Firebase Authentication > Usuarios.';
+      registerError.textContent = '';
+
+      try {
+        await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        form.reset();
+        toast('Usuario creado en Firebase.');
+      } catch (error) {
+        console.warn('No se pudo crear el usuario Firebase.', error);
+        registerError.textContent = 'No se pudo crear. Usa correo valido y clave de minimo 6 caracteres.';
+      }
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
