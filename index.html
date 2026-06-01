@@ -1380,9 +1380,6 @@
 
     const STORAGE_KEY = 'pDB';
     const AUTH_KEY = 'pastoralAuth';
-    const USERS_KEY = 'pastoralUsers';
-    const LOGIN_USER = 'admin';
-    const LOGIN_PASS = 'pastoral2026';
     const firebaseConfig = {
       apiKey: 'AIzaSyBAGclyYUjfYcJkbDcJ_2eW0YGjvJbBGa0',
       authDomain: 'panel-de-control-pastoral.firebaseapp.com',
@@ -1456,14 +1453,14 @@
       selectedGroupMembers: []
     };
 
-    let storedDb = {};
     try {
-      storedDb = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('pastoralUsers');
     } catch (error) {
-      storedDb = {};
+      console.warn('No se pudo limpiar el almacenamiento local compartido.', error);
     }
 
-    let db = normalizeDb(storedDb);
+    let db = normalizeDb({});
     let currentFirebaseUser = null;
     let cloudReady = false;
     let cloudSaveTimer = null;
@@ -1475,24 +1472,8 @@
       el.textContent = message;
     }
 
-    function getUsers() {
-      let users = [{ username: LOGIN_USER, password: LOGIN_PASS }];
-      try {
-        const savedUsers = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-        users = users.concat(savedUsers.filter(user => user.username && user.password));
-      } catch (error) {
-        users = users;
-      }
-      return users;
-    }
-
-    function saveUsers(users) {
-      const customUsers = users.filter(user => user.username !== LOGIN_USER);
-      localStorage.setItem(USERS_KEY, JSON.stringify(customUsers));
-    }
-
-    function validCredentials(username, password) {
-      return getUsers().some(user => user.username === username && user.password === password);
+    function getUserStorageKey(user = currentFirebaseUser) {
+      return user ? `${STORAGE_KEY}:${user.uid}` : STORAGE_KEY;
     }
 
     function isAuthenticated() {
@@ -1663,7 +1644,7 @@
         if (snapshot.exists()) {
           const cloudData = snapshot.data();
           db = normalizeDb(cloudData.db || cloudData);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+          localStorage.setItem(getUserStorageKey(user), JSON.stringify(db));
           cloudReady = true;
           render();
           setSyncStatus('online', `Firebase conectado: ${user.email || 'usuario'}`);
@@ -1672,7 +1653,7 @@
         }
 
         db = normalizeDb({});
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        localStorage.setItem(getUserStorageKey(user), JSON.stringify(db));
         cloudReady = true;
         await setDoc(ref, {
           db,
@@ -1717,7 +1698,7 @@
 
     function save(message) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        localStorage.setItem(getUserStorageKey(), JSON.stringify(db));
       } catch (error) {
         console.warn('No se pudo guardar en este navegador.', error);
       }
@@ -2355,48 +2336,24 @@
         return;
       } catch (error) {
         console.warn('Inicio con Firebase no disponible.', error);
+        loginError.textContent = 'No pudimos entrar con Firebase. Revisa correo, clave o dominio autorizado.';
       }
-
-      if (validCredentials(user, pass)) {
-        form.reset();
-        setAuthenticated(true);
-        setSyncStatus('local', 'Modo local: no sincroniza Firebase');
-        toast('Bienvenido a Control Pastoral en modo local.');
-        return;
-      }
-
-      loginError.textContent = 'Correo o contrasena incorrectos.';
     });
 
     document.getElementById('registerUserForm').addEventListener('submit', event => {
       event.preventDefault();
-      const username = document.getElementById('newUser').value.trim();
-      const password = document.getElementById('newPass').value;
       const registerError = document.getElementById('registerError');
-      const users = getUsers();
-
-      if (username.length < 3 || password.length < 4) {
-        registerError.textContent = 'Usa un usuario de 3 letras y una clave de 4 caracteres minimo.';
-        return;
-      }
-
-      if (users.some(user => user.username === username)) {
-        registerError.textContent = 'Ese usuario ya existe.';
-        return;
-      }
-
-      users.push({ username, password });
-      saveUsers(users);
       event.currentTarget.reset();
-      registerError.textContent = '';
-      toast('Usuario registrado. Ya puedes iniciar sesion.');
+      registerError.textContent = 'Crea los usuarios en Firebase Authentication > Usuarios.';
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
       signOut(firebaseAuth).catch(error => console.warn('No se pudo cerrar Firebase.', error));
       currentFirebaseUser = null;
       cloudReady = false;
-      setSyncStatus('local', 'Modo local');
+      db = normalizeDb({});
+      render();
+      setSyncStatus('local', 'Inicia sesion con Firebase');
       setAuthenticated(false);
       show('dash');
     });
@@ -3029,10 +2986,10 @@
       cloudReady = false;
 
       if (!user) {
-        if (!isAuthenticated()) {
-          setAuthenticated(false);
-          setSyncStatus('local', 'Modo local');
-        }
+        db = normalizeDb({});
+        render();
+        setAuthenticated(false);
+        setSyncStatus('local', 'Inicia sesion con Firebase');
         return;
       }
 
@@ -3041,9 +2998,9 @@
       loadCloudData(user);
     });
 
-    setAuthenticated(isAuthenticated());
-    setSyncStatus(isAuthenticated() ? 'local' : 'local', isAuthenticated() ? 'Modo local: no sincroniza Firebase' : 'Modo local');
-    save();
+    setAuthenticated(false);
+    setSyncStatus('local', 'Inicia sesion con Firebase');
+    render();
   </script>
 </body>
 </html>
