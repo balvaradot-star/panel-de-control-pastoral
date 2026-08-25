@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'control-pastoral-v5';
+const CACHE_VERSION = 'control-pastoral-v18';
 const APP_SHELL = [
   './',
   './index.html',

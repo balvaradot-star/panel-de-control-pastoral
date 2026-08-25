@@ -29,6 +29,10 @@
 
     * { box-sizing: border-box; }
 
+    [hidden] {
+      display: none !important;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -98,6 +102,43 @@
     .login-card h2 {
       margin: 0 0 12px;
       font-size: 17px;
+    }
+
+    .login-mode-note {
+      margin: -4px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .login-subtle-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .subtle-link {
+      border: 0;
+      background: transparent;
+      color: var(--brand);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .demo-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .demo-actions .btn {
+      min-height: 38px;
+      padding: 8px 10px;
+      font-size: 13px;
     }
 
     .app {
@@ -537,9 +578,152 @@
     }
 
     input:focus,
-    select:focus {
+    select:focus,
+    .rich-editor:focus {
       outline: 2px solid rgba(35, 100, 90, 0.18);
       border-color: var(--brand-2);
+    }
+
+    .rich-editor {
+      width: 100%;
+      min-height: 190px;
+      max-height: 460px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 12px;
+      line-height: 1.5;
+    }
+
+    .rich-editor:empty::before {
+      content: attr(data-placeholder);
+      color: #8a959f;
+      font-weight: 600;
+    }
+
+    .rich-editor img,
+    .note-content img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .editor-tools,
+    .attachment-tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .file-hint {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .image-preview {
+      display: none;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8faf9;
+    }
+
+    .image-preview.show {
+      display: flex;
+    }
+
+    .image-preview img {
+      width: 86px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .image-preview span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .notes-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .note-item summary {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .note-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note-title {
+      display: block;
+      color: var(--ink);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .note-meta {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .note-toggle {
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .note-item[open] .note-toggle::before {
+      content: "Cerrar";
+    }
+
+    .note-item:not([open]) .note-toggle::before {
+      content: "Abrir";
+    }
+
+    .note-content {
+      padding: 0 14px 14px;
+      color: var(--ink);
+    }
+
+    .note-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
     }
 
     .row {
@@ -657,6 +841,165 @@
       color: var(--warn);
     }
 
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 0 10px;
+      background: #edf7f1;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    .role-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .role-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 190px 190px;
+      gap: 10px;
+      align-items: end;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .role-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .role-card small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .permission-note {
+      padding: 12px;
+      border: 1px solid #c9ded8;
+      border-radius: 8px;
+      background: #f2faf7;
+      color: #285b51;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .announcement-grid,
+    .announcement-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .announcement-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .announcement-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(29, 37, 44, 0.05);
+    }
+
+    .announcement-card.is-important {
+      border-color: #e7c25d;
+      background: #fffaf0;
+    }
+
+    .announcement-card h3 {
+      margin: 8px 0;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .announcement-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .announcement-body {
+      margin: 8px 0 0;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+
+    .announcement-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .member-tools {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .checkbox-grid label {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .checkbox-grid input {
+      width: auto;
+      min-height: auto;
+    }
+
+    .report-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .report-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .report-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .report-card small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
     .toast {
       position: fixed;
       right: 22px;
@@ -717,6 +1060,11 @@
       gap: 8px;
       flex-wrap: wrap;
       justify-content: flex-end;
+    }
+
+    .message-preview {
+      min-height: 220px;
+      font-size: 15px;
     }
 
     @media (max-width: 920px) {
@@ -815,6 +1163,13 @@
       }
       .dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .loan-metrics { grid-template-columns: 1fr; }
+      .profile-grid,
+      .announcement-grid,
+      .member-tools,
+      .checkbox-grid,
+      .role-card {
+        grid-template-columns: 1fr;
+      }
       .metric {
         min-height: 94px;
         padding: 12px;
@@ -956,24 +1311,34 @@
         <div class="brand-mark">CP</div>
         <div>
           <strong>Control Pastoral</strong>
-          <span>Ingresa tus credenciales para continuar</span>
+          <span>Ingreso de miembros y seguimiento pastoral</span>
         </div>
       </div>
+      <h2 id="loginModeTitle">Ingreso de miembro</h2>
+      <p class="login-mode-note" id="loginModeNote">Usa tu correo y contrasena registrados para entrar a tu perfil.</p>
       <form id="loginForm">
         <label>Correo electronico<input id="loginUser" type="email" autocomplete="username" required></label>
         <label>Contrasena<input id="loginPass" type="password" autocomplete="current-password" required></label>
         <p class="login-error" id="loginError"></p>
-        <button class="btn" type="submit">Entrar a la plataforma</button>
+        <button class="btn" type="submit" id="loginSubmitBtn">Entrar como miembro</button>
         <button class="btn secondary" type="button" id="resetPasswordBtn">Recuperar contrasena</button>
-        <p class="hint">Si olvidaste el correo, revisalo en Firebase Authentication &gt; Usuarios.</p>
+        <div class="login-subtle-actions">
+          <button class="subtle-link" type="button" id="pastorAccessToggle">Si eres pastor/admin, entra aqui</button>
+        </div>
+        <p class="hint" id="loginHelpText">El acceso pastoral queda reservado para el pastor/admin.</p>
       </form>
       <hr class="login-divider">
-      <h2>Registrar nuevo usuario Firebase</h2>
+      <h2>Registro de miembro</h2>
       <form id="registerUserForm">
+        <label>Nombre completo<input id="newName" autocomplete="name" required></label>
         <label>Nuevo correo<input id="newUser" type="email" autocomplete="username" required></label>
         <label>Nueva contrasena<input id="newPass" type="password" autocomplete="new-password" required></label>
+        <div class="row">
+          <label>Distrito<select id="newDistrict"></select></label>
+          <label>Iglesia<select id="newChurch"></select></label>
+        </div>
         <p class="login-error" id="registerError"></p>
-        <button class="btn secondary" type="submit">Guardar usuario</button>
+        <button class="btn secondary" type="submit">Registrarme como miembro</button>
       </form>
     </div>
   </section>
@@ -988,16 +1353,23 @@
         </div>
       </div>
       <nav aria-label="Secciones principales">
-        <button class="nav-btn active" type="button" data-id="dash" onclick="show('dash')"><span class="nav-icon">IN</span><span>Inicio</span></button>
-        <button class="nav-btn" type="button" data-id="iglesias" onclick="show('iglesias')"><span class="nav-icon">IG</span><span>Iglesias</span></button>
-        <button class="nav-btn" type="button" data-id="miembros" onclick="show('miembros')"><span class="nav-icon">MI</span><span>Miembros</span></button>
-        <button class="nav-btn" type="button" data-id="visitas" onclick="show('visitas')"><span class="nav-icon">VI</span><span>Visitas</span></button>
-        <button class="nav-btn" type="button" data-id="bautismos" onclick="show('bautismos')"><span class="nav-icon">BA</span><span>Bautismos</span></button>
-        <button class="nav-btn" type="button" data-id="construccion" onclick="show('construccion')"><span class="nav-icon">OB</span><span>Obra</span></button>
-        <button class="nav-btn" type="button" data-id="materiales" onclick="show('materiales')"><span class="nav-icon">MA</span><span>Materiales</span></button>
-        <button class="nav-btn" type="button" data-id="grupos" onclick="show('grupos')"><span class="nav-icon">GP</span><span>Grupos</span></button>
-        <button class="nav-btn" type="button" data-id="prestamos" onclick="show('prestamos')"><span class="nav-icon">PR</span><span>Prestamos</span></button>
-        <button class="nav-btn" type="button" data-id="notas" onclick="show('notas')"><span class="nav-icon">NO</span><span>Notas</span></button>
+        <button class="nav-btn active" type="button" data-id="portal" onclick="show('portal')"><span class="nav-icon">IN</span><span>Inicio</span></button>
+        <button class="nav-btn" type="button" data-id="perfil" onclick="show('perfil')"><span class="nav-icon">PE</span><span>Perfil</span></button>
+        <button class="nav-btn" type="button" data-id="participacion" onclick="show('participacion')" data-member-only><span class="nav-icon">PA</span><span>Participación</span></button>
+        <button class="nav-btn" type="button" data-id="estudios" onclick="show('estudios')" data-member-only><span class="nav-icon">EB</span><span>Estudios</span></button>
+        <button class="nav-btn" type="button" data-id="mi-grupo" onclick="show('mi-grupo')" data-leader-only><span class="nav-icon">LG</span><span>Mi grupo</span></button>
+        <button class="nav-btn" type="button" data-id="anuncios" onclick="show('anuncios')" data-comms-only><span class="nav-icon">AN</span><span>Anuncios</span></button>
+        <button class="nav-btn" type="button" data-id="dash" onclick="show('dash')" data-admin-only><span class="nav-icon">AD</span><span>Panel</span></button>
+        <button class="nav-btn" type="button" data-id="usuarios" onclick="show('usuarios')" data-admin-only><span class="nav-icon">US</span><span>Usuarios</span></button>
+        <button class="nav-btn" type="button" data-id="iglesias" onclick="show('iglesias')" data-admin-only><span class="nav-icon">IG</span><span>Iglesias</span></button>
+        <button class="nav-btn" type="button" data-id="miembros" onclick="show('miembros')" data-admin-only><span class="nav-icon">MI</span><span>Miembros</span></button>
+        <button class="nav-btn" type="button" data-id="visitas" onclick="show('visitas')" data-admin-only><span class="nav-icon">VI</span><span>Visitas</span></button>
+        <button class="nav-btn" type="button" data-id="bautismos" onclick="show('bautismos')" data-admin-only><span class="nav-icon">BA</span><span>Bautismos</span></button>
+        <button class="nav-btn" type="button" data-id="construccion" onclick="show('construccion')" data-admin-only><span class="nav-icon">OB</span><span>Obra</span></button>
+        <button class="nav-btn" type="button" data-id="materiales" onclick="show('materiales')" data-admin-only><span class="nav-icon">MA</span><span>Materiales</span></button>
+        <button class="nav-btn" type="button" data-id="grupos" onclick="show('grupos')" data-admin-only><span class="nav-icon">GP</span><span>Grupos</span></button>
+        <button class="nav-btn" type="button" data-id="prestamos" onclick="show('prestamos')" data-admin-only><span class="nav-icon">PR</span><span>Prestamos</span></button>
+        <button class="nav-btn" type="button" data-id="notas" onclick="show('notas')" data-admin-only><span class="nav-icon">NO</span><span>Notas</span></button>
       </nav>
       <div class="credits">Disenado por<br><strong>Bladimir Alvarado</strong></div>
     </aside>
@@ -1008,16 +1380,229 @@
           <h1 id="pageTitle">Dashboard pastoral</h1>
           <p class="subtitle" id="pageSubtitle">Resumen de iglesias, miembros, visitas y presupuesto de obra.</p>
           <span class="sync-status" id="syncStatus" data-status="local">Modo local</span>
+          <span class="role-badge" id="roleBadge">Rol: sin sesion</span>
         </div>
         <div class="toolbar">
           <button class="btn secondary" type="button" id="logoutBtn">Cerrar sesion</button>
-          <button class="btn secondary" type="button" id="exportBtn">Exportar datos</button>
-          <label class="btn secondary" for="importFile" style="display:inline-grid;place-items:center;">Importar datos</label>
-          <input id="importFile" type="file" accept="application/json" hidden>
+          <button class="btn secondary" type="button" id="exportBtn" data-admin-only>Exportar datos</button>
+          <label class="btn secondary" for="importFile" style="display:inline-grid;place-items:center;" data-admin-only>Importar datos</label>
+          <input id="importFile" type="file" accept="application/json" hidden data-admin-only>
         </div>
       </div>
 
-      <section id="dash" class="section active" data-title="Dashboard pastoral" data-subtitle="Resumen de iglesias, miembros, visitas y presupuesto de obra.">
+      <section id="portal" class="section active" data-title="Inicio" data-subtitle="Anuncios y novedades de tu iglesia.">
+        <div class="metrics">
+          <div class="metric"><span>Mi iglesia</span><strong id="portalChurch">Sin iglesia</strong><small>Configurada en tu perfil</small></div>
+          <div class="metric"><span>Anuncios visibles</span><strong id="portalAnnouncementCount">0</strong><small>Publicados para ti</small></div>
+          <div class="metric"><span>Rol actual</span><strong id="portalRole">Miembro</strong><small>Permisos activos</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Anuncios de la iglesia</h2></div>
+          <div class="announcement-grid" id="portalAnnouncements"></div>
+        </div>
+      </section>
+
+      <section id="perfil" class="section" data-title="Mi perfil" data-subtitle="Configura tu iglesia, datos de contacto y participacion ministerial.">
+        <div class="profile-grid">
+          <div class="panel">
+            <div class="panel-head"><h2>Perfil de usuario</h2></div>
+            <form id="profileForm">
+              <label>Nombre completo<input id="profileName" placeholder="Nombre y apellido"></label>
+              <label>Telefono<input id="profilePhone" placeholder="Telefono de contacto"></label>
+              <label>Iglesia<select id="profileChurch"></select></label>
+              <label>Participacion<select id="profileParticipation">
+                <option value="miembro">Miembro activo</option>
+                <option value="lider_grupo">Lider de grupo</option>
+                <option value="interesado">Amigo / interesado</option>
+                <option value="visita">Visita frecuente</option>
+              </select></label>
+              <label><span><input id="profileIsLeader" type="checkbox" style="width:auto;min-height:auto;"> Soy lider de un grupo pequeno</span></label>
+              <button class="btn" type="submit">Guardar mi perfil</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Estado de acceso</h2></div>
+            <div class="metrics">
+              <div class="metric"><span>Rol asignado</span><strong id="profileRole">Miembro</strong><small id="profileRoleHint">Permisos actuales</small></div>
+              <div class="metric"><span>Iglesia</span><strong id="profileChurchName">Sin iglesia</strong><small>Usada para anuncios y reportes</small></div>
+            </div>
+            <div class="permission-note">
+              Fase 3 activa: tu rol define tu menú. El miembro reporta participación y, si es líder, puede informar su grupo para revisión pastoral.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="participacion" class="section" data-title="Mi participación" data-subtitle="Reporta tu participacion ministerial semanal para mantener informado al pastor.">
+        <div class="member-tools">
+          <div class="panel">
+            <div class="panel-head"><h2>Reporte semanal</h2></div>
+            <form id="memberParticipationForm">
+              <label>Semana o fecha<input id="memberReportDate" type="date" required></label>
+              <label>Nivel de participacion<select id="memberReportLevel">
+                <option value="activo">Activo esta semana</option>
+                <option value="ocasional">Participacion ocasional</option>
+                <option value="necesita_apoyo">Necesito acompanamiento</option>
+                <option value="ausente">No pude participar</option>
+              </select></label>
+              <div>
+                <label>Areas donde participe</label>
+                <div class="checkbox-grid">
+                  <label><input type="checkbox" value="Culto" data-member-area> Culto</label>
+                  <label><input type="checkbox" value="Grupo pequeno" data-member-area> Grupo pequeno</label>
+                  <label><input type="checkbox" value="Evangelismo" data-member-area> Evangelismo</label>
+                  <label><input type="checkbox" value="Ministerio juvenil" data-member-area> Ministerio juvenil</label>
+                  <label><input type="checkbox" value="Servicio comunitario" data-member-area> Servicio comunitario</label>
+                  <label><input type="checkbox" value="Estudio biblico" data-member-area> Estudio biblico</label>
+                </div>
+              </div>
+              <label>Comentario<textarea id="memberReportNotes" placeholder="Comparte avances, necesidades o informacion pastoral relevante."></textarea></label>
+              <button class="btn" type="submit">Enviar reporte</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Mis reportes</h2></div>
+            <div class="report-list" id="memberReportRows"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="estudios" class="section" data-title="Estudios bíblicos" data-subtitle="Registra amigos interesados, curso bíblico y lección actual.">
+        <div class="member-tools">
+          <div class="panel">
+            <div class="panel-head"><h2>Nuevo estudiante bíblico</h2></div>
+            <form id="bibleStudentForm">
+              <label>Nombre del amigo<input id="bibleStudentName" required placeholder="Nombre completo"></label>
+              <label>Telefono<input id="bibleStudentPhone" placeholder="Telefono o WhatsApp"></label>
+              <label>Curso<select id="bibleCourse">
+                <option>Fe de Jesus</option>
+                <option>Profecia</option>
+                <option>Familia</option>
+                <option>Jovenes</option>
+                <option>Ninos</option>
+              </select></label>
+              <div class="row">
+                <label>Leccion actual<input id="bibleLesson" type="number" min="1" max="21" value="1" required></label>
+                <label>Estado<select id="bibleStatus">
+                  <option>En curso</option>
+                  <option>Pausado</option>
+                  <option>Completado</option>
+                  <option>Necesita visita pastoral</option>
+                </select></label>
+              </div>
+              <label>Observaciones<textarea id="bibleNotes" placeholder="Interes, necesidades, fecha de proxima visita o decision espiritual."></textarea></label>
+              <button class="btn" type="submit">Guardar estudiante</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Mis estudiantes</h2></div>
+            <div class="report-list" id="bibleStudentRows"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mi-grupo" class="section" data-title="Mi grupo" data-subtitle="Registra los datos principales de tu grupo y reporta asistencia semanal.">
+        <div class="member-tools">
+          <div class="panel">
+            <div class="panel-head"><h2>Datos del grupo</h2></div>
+            <form id="memberGroupForm">
+              <label>Nombre del grupo<input id="memberGroupName" placeholder="Ej. Grupo Betel"></label>
+              <label>Direccion<input id="memberGroupAddress" placeholder="Direccion de reunion"></label>
+              <div class="row">
+                <label>Dia<select id="memberGroupDay">
+                  <option>Domingo</option>
+                  <option>Lunes</option>
+                  <option>Martes</option>
+                  <option>Miercoles</option>
+                  <option>Jueves</option>
+                  <option>Viernes</option>
+                  <option>Sabado</option>
+                </select></label>
+                <label>Hora<input id="memberGroupTime" type="time"></label>
+              </div>
+              <div>
+                <label>Miembros oficiales de tu iglesia</label>
+                <div class="checkbox-grid" id="memberGroupOfficialMembers"></div>
+              </div>
+              <label>Nombres nuevos o no registrados<textarea id="memberGroupMembers" placeholder="Escribe un nombre por linea. Estos nombres llegaran al pastor para revision."></textarea></label>
+              <button class="btn" type="submit">Guardar grupo</button>
+            </form>
+            <div class="report-list" id="memberGroupRegisteredRows" style="margin-top:14px;"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Asistencia semanal</h2></div>
+            <form id="groupAttendanceForm">
+              <label>Fecha<input id="groupAttendanceDate" type="date" required></label>
+              <div>
+                <label>Miembros del grupo presentes</label>
+                <div class="checkbox-grid" id="groupAttendanceMemberRows"></div>
+              </div>
+              <div class="row">
+                <label>Asistentes<input id="groupAttendanceCount" type="number" min="0" step="1" required></label>
+                <label>Amigos invitados<input id="groupFriendsCount" type="number" min="0" step="1"></label>
+              </div>
+              <label>Observaciones<textarea id="groupAttendanceNotes" placeholder="Necesidades, decisiones, visitas o informacion pastoral."></textarea></label>
+              <button class="btn" type="submit">Guardar asistencia</button>
+            </form>
+            <div class="report-list" id="groupAttendanceRows" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="anuncios" class="section" data-title="Anuncios" data-subtitle="Publica novedades para una iglesia especifica o para todas.">
+        <div class="metrics">
+          <div class="metric"><span>Anuncios totales</span><strong id="announcementsTotal">0</strong><small>Registrados</small></div>
+          <div class="metric"><span>Publicados</span><strong id="announcementsPublished">0</strong><small>Visibles para miembros</small></div>
+          <div class="metric"><span>Mi iglesia</span><strong id="announcementsChurch">Todas</strong><small>Filtro por destino</small></div>
+        </div>
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head"><h2>Nuevo anuncio</h2></div>
+            <form id="announcementForm">
+              <label>Titulo<input id="announcementTitle" required placeholder="Ej. Reunion de lideres"></label>
+              <label>Fecha<input id="announcementDate" type="date" required></label>
+              <label>Destino<select id="announcementChurch">
+                <option value="all">Todas las iglesias</option>
+              </select></label>
+              <label>Mensaje<textarea id="announcementBody" required placeholder="Escribe el anuncio que veran los miembros..."></textarea></label>
+              <label><span><input id="announcementImportant" type="checkbox" style="width:auto;min-height:auto;"> Marcar como importante</span></label>
+              <button class="btn" type="submit">Publicar anuncio</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Anuncios publicados</h2></div>
+            <div class="announcement-list" id="announcementRows"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="usuarios" class="section" data-title="Usuarios y roles" data-subtitle="Asigna permisos a miembros, lideres y director de comunicaciones.">
+        <div class="metrics">
+          <div class="metric"><span>Usuarios registrados</span><strong id="usersTotal">0</strong><small>Perfiles Firebase</small></div>
+          <div class="metric"><span>Pastores/Admin</span><strong id="adminsTotal">0</strong><small>Acceso completo</small></div>
+          <div class="metric"><span>Comunicaciones</span><strong id="commsTotal">0</strong><small>Preparado para anuncios</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Asignacion de roles</h2></div>
+          <div class="permission-note" style="margin-bottom:12px;">
+            Solo el rol Pastor/Admin puede cambiar roles. Los nuevos usuarios quedan como Miembro hasta que los ajustes desde aqui.
+          </div>
+          <div class="role-list" id="userRoleRows"></div>
+        </div>
+      </section>
+
+      <section id="dash" class="section" data-title="Dashboard pastoral" data-subtitle="Resumen de iglesias, miembros, visitas y presupuesto de obra.">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Seguimiento pastoral consolidado</h2>
+            <div class="row" style="width:min(860px,100%);">
+              <select id="pastorDistrictFilter"></select>
+              <select id="pastorChurchFilter"></select>
+            </div>
+          </div>
+          <input id="pastorSearch" placeholder="Buscar miembro, lider, estudiante, curso o estado">
+        </div>
+
         <div class="metrics dashboard-metrics">
           <div class="metric"><span>Iglesias registradas</span><strong id="cI">0</strong><small id="lastChurch">Sin registros</small></div>
           <div class="metric"><span>Miembros activos</span><strong id="cM">0</strong><small id="memberAvg">0 por iglesia</small></div>
@@ -1049,15 +1634,46 @@
             </table>
           </div>
         </div>
+
+        <div class="chart-grid">
+          <div class="panel">
+            <div class="panel-head"><h2>Reportes de miembros</h2></div>
+            <div class="report-list" id="pastorMemberReportRows"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Grupos reportados por lideres</h2></div>
+            <div class="report-list" id="pastorMemberGroupRows"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Estudiantes bíblicos reportados</h2></div>
+          <div class="report-list" id="pastorBibleStudentRows"></div>
+        </div>
       </section>
 
       <section id="iglesias" class="section" data-title="Iglesias" data-subtitle="Registra congregaciones y mantenlas disponibles para miembros y visitas.">
         <div class="grid">
           <div class="panel">
+            <div class="panel-head"><h2>Nuevo distrito</h2></div>
+            <form id="districtForm">
+              <label>Nombre del distrito<input id="districtName" placeholder="Ej. Distrito Norte" required></label>
+              <button class="btn" type="submit">Registrar distrito</button>
+            </form>
+            <div class="table-wrap" style="margin-top:14px;">
+              <table>
+                <thead><tr><th>Distrito</th><th>Iglesias</th><th>Estado</th><th class="actions">Acciones</th></tr></thead>
+                <tbody id="tD"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
             <div class="panel-head"><h2>Nueva iglesia</h2></div>
             <form id="churchForm">
+              <label>Distrito<select id="iDistrict" required></select></label>
               <label>Nombre de la iglesia<input id="iName" autocomplete="organization" required></label>
               <label>Sector o direccion<input id="iAddress" autocomplete="street-address"></label>
+              <label><span><input id="iActive" type="checkbox" checked style="width:auto;min-height:auto;"> Habilitada para registro de miembros</span></label>
               <button class="btn" type="submit">Registrar iglesia</button>
             </form>
           </div>
@@ -1068,7 +1684,7 @@
             </div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Iglesia</th><th>Sector</th><th>Miembros</th><th class="actions">Acciones</th></tr></thead>
+                <thead><tr><th>Distrito</th><th>Iglesia</th><th>Sector</th><th>Miembros</th><th class="actions">Acciones</th></tr></thead>
                 <tbody id="tI"></tbody>
               </table>
             </div>
@@ -1245,6 +1861,14 @@
                     <label>Monto<input type="number" id="montoG" min="0" step="0.01" required></label>
                     <label>Tipo<select id="tipoG"><option>Materiales</option><option>Mano de obra</option><option>Transporte</option><option>Permisos</option><option>Otros</option></select></label>
                   </div>
+                  <label>Imagen del gasto
+                    <input type="file" id="expenseReceipt" accept="image/*">
+                  </label>
+                  <div class="image-preview" id="expenseReceiptPreview">
+                    <img alt="">
+                    <span>Imagen lista para guardar</span>
+                    <button class="btn danger" type="button" id="removeExpenseReceipt">Quitar</button>
+                  </div>
                   <button class="btn" type="submit" id="expenseSubmitBtn">Guardar gasto</button>
                 </form>
               </div>
@@ -1263,7 +1887,7 @@
             </div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Obra</th><th>No de Diario</th><th>Fecha</th><th>Tipo</th><th>Descripcion</th><th>Monto</th><th class="actions">Acciones</th></tr></thead>
+                <thead><tr><th>Obra</th><th>No de Diario</th><th>Fecha</th><th>Tipo</th><th>Descripcion</th><th>Monto</th><th>Imagen</th><th class="actions">Acciones</th></tr></thead>
                 <tbody id="tGasto"></tbody>
               </table>
             </div>
@@ -1468,7 +2092,13 @@
             <form id="noteForm">
               <label>Titulo<input id="noteTitle" required placeholder="Ej. Reunion con lideres"></label>
               <label>Fecha<input id="noteDate" type="date" required></label>
-              <label>Nota<textarea id="noteBody" required placeholder="Escribe aqui la informacion importante..."></textarea></label>
+              <label>Nota</label>
+              <div class="editor-tools">
+                <button class="btn secondary" type="button" id="noteAddImageBtn">Insertar imagen</button>
+                <span class="file-hint">Tambien puedes pegar una imagen copiada dentro del editor.</span>
+                <input type="file" id="noteImageInput" accept="image/*" hidden>
+              </div>
+              <div id="noteBody" class="rich-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Escribe aqui la informacion importante..."></div>
               <button class="btn" type="submit">Guardar nota</button>
             </form>
           </div>
@@ -1480,12 +2110,7 @@
                 <input id="noteDateFilter" type="date">
               </div>
             </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Fecha</th><th>Titulo</th><th>Nota</th><th class="actions">Acciones</th></tr></thead>
-                <tbody id="noteRows"></tbody>
-              </table>
-            </div>
+            <div class="notes-list" id="noteRows"></div>
           </div>
         </div>
       </section>
@@ -1516,12 +2141,42 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="whatsappModal" role="dialog" aria-modal="true" aria-labelledby="whatsappModalTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="whatsappModalTitle">Mensaje pastoral</h2>
+          <p class="subtitle" id="whatsappModalSubtitle"></p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn secondary" type="button" id="copyWhatsappBtn">Copiar mensaje</button>
+          <button class="btn" type="button" id="openWhatsappBtn">Abrir WhatsApp</button>
+          <button class="btn danger" type="button" id="closeWhatsappBtn">Cerrar</button>
+        </div>
+      </div>
+      <form>
+        <label>Tipo de mensaje
+          <select id="whatsappTemplate">
+            <option value="dia">Feliz dia con promesa biblica</option>
+            <option value="culto">Extranamos tu presencia en el culto</option>
+            <option value="oracion">Estoy orando por ti</option>
+            <option value="animo">Palabra de animo pastoral</option>
+          </select>
+        </label>
+        <label>Mensaje personalizado
+          <textarea id="whatsappMessage" class="message-preview"></textarea>
+        </label>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
     import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
     import { doc, enableIndexedDbPersistence, getDoc, getFirestore, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
     const STORAGE_KEY = 'pDB';
+    const PUBLIC_REGISTRATION_KEY = `${STORAGE_KEY}:public-registration`;
     const AUTH_KEY = 'pastoralAuth';
     const firebaseConfig = {
       apiKey: 'AIzaSyBAGclyYUjfYcJkbDcJ_2eW0YGjvJbBGa0',
@@ -1534,6 +2189,12 @@
     const firebaseApp = initializeApp(firebaseConfig);
     const firebaseAuth = getAuth(firebaseApp);
     const firestore = getFirestore(firebaseApp);
+    const WHATSAPP_TEMPLATES = {
+      dia: memberName => `Hola ${memberName}, feliz dia. Hoy queria saludarte y recordarte una promesa que anima el corazon: Dios cuida de sus hijos y no los deja solos, como nos recuerda el Salmo 23. Que su paz te acompane y te fortalezca hoy. Un abrazo y mis oraciones.`,
+      culto: memberName => `Hola ${memberName}, espero que estes bien. Queria decirte con carino que hemos extranado tu presencia en el culto. Tu vida es valiosa para la iglesia y seria una alegria volver a verte y compartir juntos en la casa de Dios.`,
+      oracion: memberName => `Hola ${memberName}, hoy estuve orando por ti. Le pedi al Senor que te sostenga, te de paz y renueve tus fuerzas. Cuenta con mi acompanamiento y mis oraciones; no estas solo en este camino.`,
+      animo: memberName => `Hola ${memberName}, paso a dejarte una palabra de animo: Dios conoce tu vida, tus cargas y tus necesidades. El mensaje de Isaias 41 nos recuerda que el Senor sostiene a los suyos. Que hoy puedas descansar en su cuidado y sentir su direccion con claridad.`
+    };
     const ORDER_TEMPLATE = [
       ['Guia adulto ALUMNO', 7300],
       ['Guia adulto ALUMNO EN INGLES', 7900],
@@ -1594,23 +2255,27 @@
         workYear: '',
         materialYear: '',
         loanChurch: '',
-        loanYear: ''
+        loanYear: '',
+        pastorDistrict: '',
+        pastorChurch: '',
+        pastorSearch: ''
       },
       selectedOrderId: '',
+      selectedWhatsAppMemberId: '',
       editingExpenseId: '',
+      expenseReceiptImage: '',
+      expenseReceiptName: '',
       editingMemberId: '',
       selectedGroupMembers: []
     };
 
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem('pastoralUsers');
-    } catch (error) {
-      console.warn('No se pudo limpiar el almacenamiento local compartido.', error);
-    }
-
     let db = normalizeDb({});
     let currentFirebaseUser = null;
+    let currentUserProfile = null;
+    let pendingRegistrationProfile = null;
+    let pendingLoginIntent = '';
+    let loginRole = 'member';
+    let demoMode = false;
     let cloudReady = false;
     let cloudSaveTimer = null;
 
@@ -1623,6 +2288,126 @@
 
     function getUserStorageKey(user = currentFirebaseUser) {
       return user ? `${STORAGE_KEY}:${user.uid}` : STORAGE_KEY;
+    }
+
+    function readLocalDb(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? normalizeDb(JSON.parse(raw)) : null;
+      } catch (error) {
+        console.warn('No se pudo leer almacenamiento local.', error);
+        return null;
+      }
+    }
+
+    function getLocalRegistrationDb() {
+      const keys = [PUBLIC_REGISTRATION_KEY, STORAGE_KEY, `${STORAGE_KEY}:demo`];
+      try {
+        for (let index = 0; index < localStorage.length; index += 1) {
+          const key = localStorage.key(index);
+          if (key && key.startsWith(`${STORAGE_KEY}:`) && !keys.includes(key)) keys.push(key);
+        }
+      } catch (error) {
+        console.warn('No se pudieron revisar datos locales.', error);
+      }
+
+      return keys
+        .map(readLocalDb)
+        .filter(item => item && item.iglesias && item.iglesias.length)
+        .sort((a, b) => b.iglesias.length - a.iglesias.length)[0] || null;
+    }
+
+    function publishPublicRegistrationData() {
+      if (!db.iglesias || !db.iglesias.length) return;
+      try {
+        localStorage.setItem(PUBLIC_REGISTRATION_KEY, JSON.stringify({
+          districts: db.districts || [],
+          iglesias: db.iglesias,
+          updatedAt: new Date().toISOString()
+        }));
+      } catch (error) {
+        console.warn('No se pudieron preparar iglesias para registro publico.', error);
+      }
+    }
+
+    function seedDemoData() {
+      db.districts = db.districts || [];
+      if (!db.districts.length) {
+        db.districts.push(
+          { id: 'dt-demo-centro', name: 'Distrito Central', active: true },
+          { id: 'dt-demo-norte', name: 'Distrito Norte', active: true }
+        );
+      }
+      if (!db.iglesias.length) {
+        db.iglesias.push(
+          { id: 'ig-demo-centro', district: 'Distrito Central', name: 'Iglesia Central', address: 'Sector centro', active: true },
+          { id: 'ig-demo-norte', district: 'Distrito Norte', name: 'Iglesia Filadelfia', address: 'Sector norte', active: true }
+        );
+      }
+      if (!db.miembros.length) {
+        db.miembros.push(
+          { id: 'mi-demo-1', churchId: 'ig-demo-centro', name: 'Ana Perez', phone: '3000000001', address: 'Barrio Centro' },
+          { id: 'mi-demo-2', churchId: 'ig-demo-centro', name: 'Carlos Ruiz', phone: '3000000002', address: 'Barrio Esperanza' },
+          { id: 'mi-demo-3', churchId: 'ig-demo-norte', name: 'Marta Gomez', phone: '3000000003', address: 'Barrio Norte' }
+        );
+      }
+      if (!(db.announcements || []).length) {
+        db.announcements = db.announcements || [];
+        db.announcements.push({
+          id: 'an-demo-1',
+          title: 'Reunion de iglesia',
+          body: 'Este sabado tendremos reunion especial de lideres y miembros.',
+          date: new Date().toISOString().slice(0, 10),
+          churchIds: ['ig-demo-centro'],
+          important: true,
+          published: true,
+          createdBy: 'demo-admin',
+          createdByEmail: 'pastor.demo@local',
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
+    function enterDemo(role) {
+      demoMode = true;
+      cloudReady = false;
+      pendingLoginIntent = role === 'member' ? 'member' : 'admin';
+      pendingRegistrationProfile = null;
+      db = normalizeDb(JSON.parse(localStorage.getItem(`${STORAGE_KEY}:demo`) || '{}'));
+      seedDemoData();
+      currentFirebaseUser = {
+        uid: role === 'member' ? 'demo-member' : 'demo-admin',
+        email: role === 'member' ? 'miembro.demo@local' : 'pastor.demo@local',
+        displayName: role === 'member' ? 'Miembro Demo' : 'Pastor Demo'
+      };
+      currentUserProfile = null;
+      let profile = ensureCurrentUserProfile(currentFirebaseUser, role !== 'member');
+      profile.name = role === 'member' ? 'Miembro Demo' : 'Pastor Demo';
+      profile.role = role === 'member' ? 'member' : 'pastor_admin';
+      profile.churchId = profile.churchId || 'ig-demo-centro';
+      profile.isGroupLeader = role === 'member';
+      localStorage.setItem(`${STORAGE_KEY}:demo`, JSON.stringify(db));
+      setAuthenticated(true);
+      setSyncStatus('local', role === 'member' ? 'Modo prueba: miembro' : 'Modo prueba: pastor/admin');
+      render();
+      show(role === 'member' ? 'portal' : 'dash');
+      toast('Modo de prueba local activo.');
+    }
+
+    function updateLoginMode(role = loginRole) {
+      loginRole = role === 'admin' ? 'admin' : 'member';
+      const isAdmin = loginRole === 'admin';
+      document.getElementById('loginModeTitle').textContent = isAdmin ? 'Acceso pastoral' : 'Ingreso de miembro';
+      document.getElementById('loginModeNote').textContent = isAdmin
+        ? 'Entrada reservada para pastor/admin y direccion autorizada.'
+        : 'Usa tu correo y contrasena registrados para entrar a tu perfil.';
+      document.getElementById('loginSubmitBtn').textContent = isAdmin ? 'Entrar como pastor/admin' : 'Entrar como miembro';
+      document.getElementById('pastorAccessToggle').textContent = isAdmin
+        ? 'Volver al ingreso de miembro'
+        : 'Si eres pastor/admin, entra aqui';
+      document.getElementById('loginHelpText').textContent = isAdmin
+        ? 'Este acceso es discreto y conserva los permisos pastorales.'
+        : 'El acceso pastoral queda reservado para el pastor/admin.';
     }
 
     function isAuthenticated() {
@@ -1655,10 +2440,37 @@
     function normalizeDb(raw) {
       const churches = (raw.iglesias || []).map((item, index) => {
         if (typeof item === 'string') {
-          return { id: cryptoId('ig', index), name: item, address: '' };
+          return { id: cryptoId('ig', index), name: item, address: '', district: '', active: true };
         }
-        return { id: item.id || cryptoId('ig', index), name: item.name || item.n || '', address: item.address || item.dir || '' };
+        return {
+          id: item.id || cryptoId('ig', index),
+          name: item.name || item.n || '',
+          address: item.address || item.dir || '',
+          district: item.district || item.distrito || '',
+          active: item.active !== undefined ? Boolean(item.active) : (item.habilitada !== undefined ? Boolean(item.habilitada) : true)
+        };
       }).filter(item => item.name);
+
+      const districtNames = new Set(churches.map(ch => ch.district).filter(Boolean));
+      const districts = (raw.districts || raw.distritos || []).map((item, index) => {
+        if (typeof item === 'string') {
+          districtNames.add(item);
+          return { id: cryptoId('dt', index), name: item, active: true };
+        }
+        const name = item.name || item.nombre || '';
+        if (name) districtNames.add(name);
+        return {
+          id: item.id || cryptoId('dt', index),
+          name,
+          active: item.active !== undefined ? Boolean(item.active) : (item.habilitado !== undefined ? Boolean(item.habilitado) : true)
+        };
+      }).filter(item => item.name);
+
+      districtNames.forEach(name => {
+        if (!districts.some(district => district.name === name)) {
+          districts.push({ id: cryptoId('dt', districts.length), name, active: true });
+        }
+      });
 
       const resolveChurch = value => {
         const church = churches.find(ch => ch.id === value || ch.name === value);
@@ -1693,6 +2505,7 @@
       };
 
       return {
+        districts,
         iglesias: churches,
         miembros: (raw.miembros || []).map((item, index) => ({
           id: item.id || cryptoId('mi', index),
@@ -1721,7 +2534,9 @@
             date: item.date || item.fecha || '',
             description: item.description || item.d || '',
             amount: Number(item.amount !== undefined && item.amount !== null ? item.amount : (item.a !== undefined && item.a !== null ? item.a : 0)),
-            type: item.type || item.t || 'Otros'
+            type: item.type || item.t || 'Otros',
+            receiptImage: item.receiptImage || item.imagen || item.comprobante || '',
+            receiptName: item.receiptName || item.nombreImagen || ''
           };
         }).filter(item => item.description || item.amount),
         materiales: (raw.materiales || []).map((item, index) => ({
@@ -1787,8 +2602,87 @@
           id: item.id || cryptoId('no', index),
           title: item.title || item.titulo || '',
           date: item.date || item.fecha || '',
-          body: item.body || item.nota || item.contenido || ''
-        })).filter(item => item.title || item.body),
+          body: item.body || item.nota || item.contenido || '',
+          bodyHtml: item.bodyHtml || item.html || '',
+          images: item.images || []
+        })).filter(item => item.title || item.body || item.bodyHtml),
+        users: (raw.users || raw.usuarios || []).map((item, index) => ({
+          uid: item.uid || item.id || cryptoId('us', index),
+          email: item.email || item.correo || '',
+          name: item.name || item.nombre || '',
+          phone: item.phone || item.telefono || '',
+          churchId: item.churchId || item.iglesiaId || resolveChurch(item.church || item.iglesia || ''),
+          role: item.role || item.rol || 'member',
+          participation: item.participation || item.participacion || 'miembro',
+          isGroupLeader: Boolean(item.isGroupLeader || item.esLiderGrupo || item.liderGrupo),
+          createdAt: item.createdAt || item.creado || new Date().toISOString(),
+          updatedAt: item.updatedAt || item.actualizado || ''
+        })).filter(item => item.uid || item.email),
+        announcements: (raw.announcements || raw.anuncios || []).map((item, index) => {
+          const rawChurchIds = item.churchIds || item.iglesias || item.churchId || item.iglesiaId || 'all';
+          const churchIds = Array.isArray(rawChurchIds)
+            ? rawChurchIds.map(value => value === 'all' ? 'all' : resolveChurch(value)).filter(Boolean)
+            : [rawChurchIds === 'all' ? 'all' : resolveChurch(rawChurchIds)].filter(Boolean);
+          return {
+            id: item.id || cryptoId('an', index),
+            title: item.title || item.titulo || '',
+            body: item.body || item.mensaje || item.contenido || '',
+            date: item.date || item.fecha || '',
+            churchIds: churchIds.length ? churchIds : ['all'],
+            important: Boolean(item.important || item.importante),
+            published: item.published !== undefined ? Boolean(item.published) : true,
+            createdBy: item.createdBy || item.creadoPor || '',
+            createdByEmail: item.createdByEmail || item.correoCreador || '',
+            createdAt: item.createdAt || item.creado || new Date().toISOString()
+          };
+        }).filter(item => item.title || item.body),
+        memberReports: (raw.memberReports || raw.reportesMiembro || []).map((item, index) => ({
+          id: item.id || cryptoId('rm', index),
+          uid: item.uid || item.userId || '',
+          churchId: resolveChurch(item.churchId || item.iglesiaId || ''),
+          name: item.name || item.nombre || '',
+          email: item.email || item.correo || '',
+          date: item.date || item.fecha || '',
+          level: item.level || item.nivel || 'activo',
+          areas: item.areas || item.participaciones || [],
+          notes: item.notes || item.notas || item.comentario || '',
+          createdAt: item.createdAt || item.creado || new Date().toISOString()
+        })).filter(item => item.uid || item.name || item.notes),
+        memberGroups: (raw.memberGroups || raw.gruposMiembro || []).map((item, index) => ({
+          id: item.id || cryptoId('mg', index),
+          leaderUid: item.leaderUid || item.uid || item.userId || '',
+          leaderName: item.leaderName || item.lider || '',
+          churchId: resolveChurch(item.churchId || item.iglesiaId || ''),
+          name: item.name || item.nombre || '',
+          address: item.address || item.direccion || '',
+          day: item.day || item.dia || 'Sabado',
+          time: item.time || item.hora || '',
+          memberIds: item.memberIds || item.miembrosIds || [],
+          membersText: item.membersText || item.miembrosTexto || '',
+          attendance: (item.attendance || item.asistencias || []).map((attendance, attendanceIndex) => ({
+            id: attendance.id || cryptoId('as', attendanceIndex),
+            date: attendance.date || attendance.fecha || '',
+            count: Number(attendance.count !== undefined ? attendance.count : (attendance.asistentes || 0)),
+            friends: Number(attendance.friends !== undefined ? attendance.friends : (attendance.amigos || 0)),
+            attendeeIds: attendance.attendeeIds || attendance.miembrosPresentes || [],
+            notes: attendance.notes || attendance.notas || ''
+          }))
+        })).filter(item => item.leaderUid || item.name),
+        bibleStudents: (raw.bibleStudents || raw.estudiantesBiblicos || []).map((item, index) => ({
+          id: item.id || cryptoId('eb', index),
+          uid: item.uid || item.userId || '',
+          reporterName: item.reporterName || item.reportadoPor || '',
+          reporterEmail: item.reporterEmail || item.correoReporta || '',
+          churchId: resolveChurch(item.churchId || item.iglesiaId || ''),
+          name: item.name || item.nombre || '',
+          phone: item.phone || item.telefono || '',
+          course: item.course || item.curso || 'Fe de Jesus',
+          lesson: Math.max(1, Math.min(21, Number(item.lesson || item.leccion || 1))),
+          status: item.status || item.estado || 'En curso',
+          notes: item.notes || item.notas || '',
+          createdAt: item.createdAt || item.creado || new Date().toISOString(),
+          updatedAt: item.updatedAt || item.actualizado || ''
+        })).filter(item => item.uid || item.name),
         budget: Number(raw.budget || 0)
       };
     }
@@ -1812,12 +2706,46 @@
       return `<option value="">Todos los anos</option>${years.map(year => `<option value="${year}">${year}</option>`).join('')}`;
     }
 
-    function getCloudDocRef(user = currentFirebaseUser) {
+    function getSharedCloudDocRef() {
+      return doc(firestore, 'pastoral', 'shared', 'control', 'main');
+    }
+
+    function getLegacyUserDocRef(user = currentFirebaseUser) {
       return user ? doc(firestore, 'pastoral', user.uid, 'control', 'main') : null;
     }
 
+    function getCloudDocRef() {
+      return currentFirebaseUser ? getSharedCloudDocRef() : null;
+    }
+
+    async function loadPublicRegistrationData() {
+      const localRegistrationDb = getLocalRegistrationDb();
+      if (localRegistrationDb) {
+        db.districts = localRegistrationDb.districts;
+        db.iglesias = localRegistrationDb.iglesias;
+        renderPublicRegistrationOptions();
+      }
+
+      try {
+        const snapshot = await getDoc(getSharedCloudDocRef());
+        if (snapshot.exists()) {
+          const cloudData = snapshot.data();
+          const publicDb = normalizeDb(cloudData.db || cloudData);
+          if (publicDb.iglesias.length) {
+            db.districts = publicDb.districts;
+            db.iglesias = publicDb.iglesias;
+            publishPublicRegistrationData();
+          }
+          renderPublicRegistrationOptions();
+        }
+      } catch (error) {
+        console.warn('No se pudieron cargar iglesias para registro publico.', error);
+        renderPublicRegistrationOptions();
+      }
+    }
+
     async function loadCloudData(user) {
-      const ref = getCloudDocRef(user);
+      const ref = getSharedCloudDocRef();
       if (!ref) return;
 
       try {
@@ -1825,16 +2753,28 @@
         if (snapshot.exists()) {
           const cloudData = snapshot.data();
           db = normalizeDb(cloudData.db || cloudData);
+          ensureCurrentUserProfile(user, pendingLoginIntent === 'admin');
           localStorage.setItem(getUserStorageKey(user), JSON.stringify(db));
+          publishPublicRegistrationData();
           cloudReady = true;
+          saveCloudData();
           render();
           setSyncStatus('online', `Firebase conectado: ${user.email || 'usuario'}`);
           toast('Datos sincronizados con Firebase.');
           return;
         }
 
-        db = normalizeDb({});
+        const legacyRef = getLegacyUserDocRef(user);
+        const legacySnapshot = legacyRef ? await getDoc(legacyRef) : null;
+        if (legacySnapshot && legacySnapshot.exists()) {
+          const legacyData = legacySnapshot.data();
+          db = normalizeDb(legacyData.db || legacyData);
+        } else {
+          db = normalizeDb({});
+        }
+        ensureCurrentUserProfile(user, pendingLoginIntent !== 'member');
         localStorage.setItem(getUserStorageKey(user), JSON.stringify(db));
+        publishPublicRegistrationData();
         cloudReady = true;
         await setDoc(ref, {
           db,
@@ -1847,6 +2787,10 @@
         toast('Cuenta Firebase iniciada con datos limpios.');
       } catch (error) {
         cloudReady = false;
+        ensureCurrentUserProfile(user, pendingLoginIntent !== 'member');
+        localStorage.setItem(getUserStorageKey(user), JSON.stringify(db));
+        publishPublicRegistrationData();
+        render();
         setSyncStatus('error', 'Error al sincronizar Firebase');
         console.warn('No se pudo cargar Firebase.', error);
         toast('Entraste en modo local. Revisa la conexion o las reglas de Firebase.');
@@ -1878,8 +2822,13 @@
     }
 
     function save(message) {
+      ensureCurrentUserProfile();
       try {
         localStorage.setItem(getUserStorageKey(), JSON.stringify(db));
+        if (currentFirebaseUser && String(currentFirebaseUser.uid).startsWith('demo-')) {
+          localStorage.setItem(`${STORAGE_KEY}:demo`, JSON.stringify(db));
+        }
+        publishPublicRegistrationData();
       } catch (error) {
         console.warn('No se pudo guardar en este navegador.', error);
       }
@@ -1889,8 +2838,13 @@
     }
 
     function saveWithoutRender() {
+      ensureCurrentUserProfile();
       try {
         localStorage.setItem(getUserStorageKey(), JSON.stringify(db));
+        if (currentFirebaseUser && String(currentFirebaseUser.uid).startsWith('demo-')) {
+          localStorage.setItem(`${STORAGE_KEY}:demo`, JSON.stringify(db));
+        }
+        publishPublicRegistrationData();
       } catch (error) {
         console.warn('No se pudo guardar en este navegador.', error);
       }
@@ -1910,6 +2864,67 @@
       return church ? church.name : 'Sin iglesia';
     }
 
+    function getChurchLabel(id) {
+      const church = db.iglesias.find(ch => ch.id === id);
+      if (!church) return 'Sin iglesia';
+      return church.district ? `${church.district} - ${church.name}` : church.name;
+    }
+
+    function churchDistricts() {
+      const names = new Set((db.districts || []).map(district => district.name).filter(Boolean));
+      db.iglesias.forEach(ch => {
+        if (ch.district) names.add(ch.district);
+      });
+      return [...names].sort((a, b) => a.localeCompare(b));
+    }
+
+    function enabledDistricts() {
+      const enabled = (db.districts || [])
+        .filter(district => district.active !== false)
+        .map(district => district.name)
+        .filter(Boolean);
+      return [...new Set(enabled)].sort((a, b) => a.localeCompare(b));
+    }
+
+    function isDistrictEnabled(name) {
+      const district = (db.districts || []).find(item => item.name === name);
+      return Boolean(name && district && district.active !== false);
+    }
+
+    function activeChurchesForRegistration() {
+      return db.iglesias.filter(ch => ch.active !== false && isDistrictEnabled(ch.district));
+    }
+
+    function getChurchDistrict(id) {
+      const church = db.iglesias.find(ch => ch.id === id);
+      return church ? (church.district || 'Sin distrito') : '';
+    }
+
+    function matchesPastorScope(churchId, values = []) {
+      const district = getChurchDistrict(churchId);
+      const districtMatch = !state.filters.pastorDistrict || district === state.filters.pastorDistrict;
+      const churchMatch = !state.filters.pastorChurch || churchId === state.filters.pastorChurch;
+      const textMatch = includesText(values, state.filters.pastorSearch);
+      return districtMatch && churchMatch && textMatch;
+    }
+
+    function renderPublicRegistrationOptions() {
+      const districtSelect = document.getElementById('newDistrict');
+      const churchSelect = document.getElementById('newChurch');
+      if (!districtSelect || !churchSelect) return;
+
+      const registrationChurches = activeChurchesForRegistration();
+      const districts = enabledDistricts().filter(district => registrationChurches.some(ch => ch.district === district));
+      const previousDistrict = districtSelect.value;
+      districtSelect.innerHTML = districts.map(district => `<option value="${escapeHtml(district)}">${escapeHtml(district)}</option>`).join('') || '<option value="">Sin distritos disponibles</option>';
+      const activeDistrict = districts.includes(previousDistrict) ? previousDistrict : (districts[0] || '');
+      if (activeDistrict) districtSelect.value = activeDistrict;
+      const churches = registrationChurches.filter(ch => ch.district === activeDistrict);
+      churchSelect.innerHTML = churches.map(ch => `<option value="${ch.id}">${escapeHtml(ch.name)}</option>`).join('') || '<option value="">Sin iglesias disponibles</option>';
+      districtSelect.disabled = !districts.length;
+      churchSelect.disabled = !churches.length;
+    }
+
     function getWorkName(id) {
       const work = db.obras.find(item => item.id === id);
       return work ? work.name : 'Sin obra';
@@ -1918,6 +2933,440 @@
     function getMemberName(id) {
       const member = db.miembros.find(item => item.id === id);
       return member ? member.name : 'Sin asignar';
+    }
+
+    function firstName(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      return parts[0] || 'hermano';
+    }
+
+    function whatsappNumber(phone) {
+      const digits = String(phone || '').replace(/\D/g, '');
+      if (!digits) return '';
+      if (digits.length === 10 && digits.startsWith('3')) return `57${digits}`;
+      if (digits.length === 12 && digits.startsWith('57')) return digits;
+      return digits;
+    }
+
+    function buildWhatsAppMessage(member, templateKey = 'dia') {
+      const builder = WHATSAPP_TEMPLATES[templateKey] || WHATSAPP_TEMPLATES.dia;
+      return builder(firstName(member && member.name));
+    }
+
+    function updateWhatsAppPreview() {
+      const member = db.miembros.find(item => item.id === state.selectedWhatsAppMemberId);
+      if (!member) return;
+      document.getElementById('whatsappMessage').value = buildWhatsAppMessage(member, document.getElementById('whatsappTemplate').value);
+    }
+
+    function openWhatsAppModal(memberId) {
+      const member = db.miembros.find(item => item.id === memberId);
+      if (!member) return;
+      state.selectedWhatsAppMemberId = memberId;
+      document.getElementById('whatsappTemplate').value = 'dia';
+      document.getElementById('whatsappModalTitle').textContent = `Mensaje para ${member.name}`;
+      document.getElementById('whatsappModalSubtitle').textContent = member.phone ? `WhatsApp: ${member.phone}` : 'Este miembro no tiene telefono registrado.';
+      updateWhatsAppPreview();
+      document.getElementById('whatsappModal').classList.add('show');
+    }
+
+    function closeWhatsAppModal() {
+      state.selectedWhatsAppMemberId = '';
+      document.getElementById('whatsappModal').classList.remove('show');
+    }
+
+    function openWhatsAppMessage() {
+      const member = db.miembros.find(item => item.id === state.selectedWhatsAppMemberId);
+      if (!member) return;
+      const phone = whatsappNumber(member.phone);
+      if (!phone) {
+        toast('Agrega el telefono del miembro para abrir WhatsApp.');
+        return;
+      }
+      const message = document.getElementById('whatsappMessage').value.trim();
+      if (!message) {
+        toast('Escribe o selecciona un mensaje.');
+        return;
+      }
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+    }
+
+    async function copyWhatsAppMessage() {
+      const message = document.getElementById('whatsappMessage').value.trim();
+      if (!message) {
+        toast('No hay mensaje para copiar.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(message);
+        toast('Mensaje copiado.');
+      } catch (error) {
+        document.getElementById('whatsappMessage').select();
+        toast('Mensaje seleccionado para copiar.');
+      }
+    }
+
+    function getAttendanceMemberName(value) {
+      if (String(value || '').startsWith('new:')) {
+        return String(value).split(':').slice(2).join(':') || 'Nombre nuevo';
+      }
+      return getMemberName(value);
+    }
+
+    function roleLabel(role) {
+      const labels = {
+        pastor_admin: 'Pastor/Admin',
+        communications: 'Dir. Comunicaciones',
+        member: 'Miembro'
+      };
+      return labels[role] || 'Miembro';
+    }
+
+    function isPastorAdmin() {
+      return currentUserProfile && currentUserProfile.role === 'pastor_admin';
+    }
+
+    function isCommunications() {
+      return currentUserProfile && currentUserProfile.role === 'communications';
+    }
+
+    function canManageAnnouncements() {
+      return isPastorAdmin() || isCommunications();
+    }
+
+    function ensureCurrentUserProfile(user = currentFirebaseUser, bootstrapAdmin = false) {
+      if (!user) {
+        currentUserProfile = null;
+        return null;
+      }
+
+      db.users = db.users || [];
+      let profile = db.users.find(item => item.uid === user.uid);
+      const emailMatch = db.users.find(item => item.email && item.email.toLowerCase() === (user.email || '').toLowerCase());
+      if (!profile && emailMatch) profile = emailMatch;
+      const registration = pendingRegistrationProfile && pendingRegistrationProfile.email.toLowerCase() === (user.email || '').toLowerCase()
+        ? pendingRegistrationProfile
+        : null;
+      const shouldBeAdmin = !registration && bootstrapAdmin;
+
+      if (!profile) {
+        profile = {
+          uid: user.uid,
+          email: user.email || '',
+          name: registration ? registration.name : (user.displayName || ''),
+          phone: '',
+          churchId: registration ? registration.churchId : (db.iglesias[0] ? db.iglesias[0].id : ''),
+          role: registration ? 'member' : (shouldBeAdmin ? 'pastor_admin' : 'member'),
+          participation: 'miembro',
+          isGroupLeader: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        db.users.push(profile);
+      }
+
+      profile.uid = user.uid;
+      profile.email = user.email || profile.email || '';
+      if (registration) {
+        profile.name = registration.name || profile.name || '';
+        profile.churchId = registration.churchId || profile.churchId || '';
+        profile.role = 'member';
+      }
+      if (shouldBeAdmin && pendingLoginIntent === 'admin' && !db.users.some(item => item.uid !== profile.uid && item.role === 'pastor_admin')) {
+        profile.role = 'pastor_admin';
+      }
+      if (pendingLoginIntent === 'member' && profile.role === 'pastor_admin' && !shouldBeAdmin) {
+        profile.role = 'member';
+      }
+      profile.role = profile.role || 'member';
+      profile.participation = profile.participation || 'miembro';
+      currentUserProfile = profile;
+      if (registration) pendingRegistrationProfile = null;
+      return profile;
+    }
+
+    function applyRoleAccess() {
+      const admin = isPastorAdmin();
+      const comms = canManageAnnouncements();
+      const member = currentUserProfile && currentUserProfile.role === 'member';
+      const leader = member && currentUserProfile.isGroupLeader;
+      document.querySelectorAll('[data-admin-only]').forEach(element => {
+        element.hidden = !admin;
+      });
+      document.querySelectorAll('[data-comms-only]').forEach(element => {
+        element.hidden = !comms;
+      });
+      document.querySelectorAll('[data-member-only]').forEach(element => {
+        element.hidden = !member;
+      });
+      document.querySelectorAll('[data-leader-only]').forEach(element => {
+        element.hidden = !leader;
+      });
+      if (!currentUserProfile) return;
+      const activeSection = document.querySelector('.section.active');
+      if (activeSection && !canAccessSection(activeSection.id)) {
+        show('portal');
+      }
+    }
+
+    function canAccessSection(id) {
+      const adminSections = ['dash', 'usuarios', 'iglesias', 'miembros', 'visitas', 'bautismos', 'construccion', 'materiales', 'grupos', 'prestamos', 'notas'];
+      if (id === 'anuncios') return canManageAnnouncements();
+      if (id === 'participacion') return currentUserProfile && currentUserProfile.role === 'member';
+      if (id === 'estudios') return currentUserProfile && currentUserProfile.role === 'member';
+      if (id === 'mi-grupo') return currentUserProfile && currentUserProfile.role === 'member' && currentUserProfile.isGroupLeader;
+      if (adminSections.includes(id)) return isPastorAdmin();
+      return true;
+    }
+
+    function renderProfile() {
+      const profile = ensureCurrentUserProfile();
+      const roleBadge = document.getElementById('roleBadge');
+      if (roleBadge) roleBadge.textContent = profile ? `Rol: ${roleLabel(profile.role)}` : 'Rol: sin sesion';
+      applyRoleAccess();
+
+      if (!profile) return;
+
+      const churchOptions = `<option value="">Selecciona iglesia</option>${db.iglesias.map(ch => `<option value="${ch.id}">${getChurchLabel(ch.id)}</option>`).join('')}`;
+      document.getElementById('profileChurch').innerHTML = churchOptions;
+      document.getElementById('profileName').value = profile.name || '';
+      document.getElementById('profilePhone').value = profile.phone || '';
+      document.getElementById('profileChurch').value = profile.churchId || '';
+      document.getElementById('profileParticipation').value = profile.participation || 'miembro';
+      document.getElementById('profileIsLeader').checked = Boolean(profile.isGroupLeader);
+      document.getElementById('profileRole').textContent = roleLabel(profile.role);
+      document.getElementById('profileRoleHint').textContent = profile.email || 'Usuario Firebase';
+      document.getElementById('profileChurchName').textContent = profile.churchId ? getChurchLabel(profile.churchId) : 'Sin iglesia';
+    }
+
+    function renderUsers() {
+      const users = db.users || [];
+      document.getElementById('usersTotal').textContent = users.length;
+      document.getElementById('adminsTotal').textContent = users.filter(user => user.role === 'pastor_admin').length;
+      document.getElementById('commsTotal').textContent = users.filter(user => user.role === 'communications').length;
+      const churchOptions = `<option value="">Sin iglesia</option>${db.iglesias.map(ch => `<option value="${ch.id}">${getChurchLabel(ch.id)}</option>`).join('')}`;
+
+      document.getElementById('userRoleRows').innerHTML = users.map(user => `
+        <div class="role-card">
+          <div>
+            <strong>${escapeHtml(user.name || user.email || 'Usuario sin nombre')}</strong>
+            <small>${escapeHtml(user.email || 'Sin correo')} · ${roleLabel(user.role)}</small>
+          </div>
+          <label>Rol
+            <select data-user-role="${user.uid}" ${user.uid === (currentFirebaseUser && currentFirebaseUser.uid) ? 'data-self-role="true"' : ''}>
+              <option value="member" ${user.role === 'member' ? 'selected' : ''}>Miembro</option>
+              <option value="communications" ${user.role === 'communications' ? 'selected' : ''}>Dir. Comunicaciones</option>
+              <option value="pastor_admin" ${user.role === 'pastor_admin' ? 'selected' : ''}>Pastor/Admin</option>
+            </select>
+          </label>
+          <label>Iglesia
+            <select data-user-church="${user.uid}">
+              ${churchOptions}
+            </select>
+          </label>
+        </div>
+      `).join('') || '<div class="empty">Cuando los usuarios se registren apareceran aqui.</div>';
+
+      users.forEach(user => {
+        const select = document.querySelector(`[data-user-church="${CSS.escape(user.uid)}"]`);
+        if (select) select.value = user.churchId || '';
+      });
+    }
+
+    function announcementChurchLabel(announcement) {
+      const ids = announcement.churchIds || ['all'];
+      if (ids.includes('all')) return 'Todas las iglesias';
+      return ids.map(getChurchName).join(', ');
+    }
+
+    function getVisibleAnnouncementsForCurrentUser() {
+      const profile = ensureCurrentUserProfile();
+      const churchId = profile ? profile.churchId : '';
+      return (db.announcements || [])
+        .filter(item => item.published)
+        .filter(item => {
+          const ids = item.churchIds || ['all'];
+          return ids.includes('all') || (churchId && ids.includes(churchId));
+        })
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    }
+
+    function renderPortal() {
+      const profile = ensureCurrentUserProfile();
+      const visible = getVisibleAnnouncementsForCurrentUser();
+      document.getElementById('portalChurch').textContent = profile && profile.churchId ? getChurchLabel(profile.churchId) : 'Sin iglesia';
+      document.getElementById('portalAnnouncementCount').textContent = visible.length;
+      document.getElementById('portalRole').textContent = profile ? roleLabel(profile.role) : 'Miembro';
+      document.getElementById('portalAnnouncements').innerHTML = visible.map(item => `
+        <article class="announcement-card ${item.important ? 'is-important' : ''}">
+          <div class="announcement-meta">
+            <span>${item.date || 'Sin fecha'}</span>
+            <span>${announcementChurchLabel(item)}</span>
+            ${item.important ? '<span>Importante</span>' : ''}
+          </div>
+          <h3>${escapeHtml(item.title || 'Sin titulo')}</h3>
+          <p class="announcement-body">${escapeHtml(item.body || '').replace(/\n/g, '<br>')}</p>
+        </article>
+      `).join('') || '<div class="empty">No hay anuncios para tu iglesia. Revisa que tu perfil tenga una iglesia asignada.</div>';
+    }
+
+    function renderAnnouncements() {
+      const announcements = (db.announcements || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      document.getElementById('announcementsTotal').textContent = announcements.length;
+      document.getElementById('announcementsPublished').textContent = announcements.filter(item => item.published).length;
+      document.getElementById('announcementsChurch').textContent = currentUserProfile && currentUserProfile.churchId ? getChurchLabel(currentUserProfile.churchId) : 'Todas';
+      document.getElementById('announcementRows').innerHTML = announcements.map(item => `
+        <article class="announcement-card ${item.important ? 'is-important' : ''}">
+          <div class="announcement-meta">
+            <span>${item.published ? 'Publicado' : 'Oculto'}</span>
+            <span>${item.date || 'Sin fecha'}</span>
+            <span>${announcementChurchLabel(item)}</span>
+          </div>
+          <h3>${escapeHtml(item.title || 'Sin titulo')}</h3>
+          <p class="announcement-body">${escapeHtml(item.body || '').replace(/\n/g, '<br>')}</p>
+          <div class="announcement-actions">
+            <button class="btn danger" type="button" data-delete="announcements" data-id="${item.id}">Eliminar anuncio</button>
+          </div>
+        </article>
+      `).join('') || '<div class="empty">No hay anuncios publicados.</div>';
+    }
+
+    function getCurrentMemberReports() {
+      const profile = ensureCurrentUserProfile();
+      if (!profile) return [];
+      return (db.memberReports || [])
+        .filter(item => item.uid === profile.uid)
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    }
+
+    function getCurrentBibleStudents() {
+      const profile = ensureCurrentUserProfile();
+      if (!profile) return [];
+      return (db.bibleStudents || [])
+        .filter(item => item.uid === profile.uid)
+        .sort((a, b) => (b.updatedAt || b.createdAt || '').localeCompare(a.updatedAt || a.createdAt || ''));
+    }
+
+    function getCurrentMemberGroup() {
+      const profile = ensureCurrentUserProfile();
+      if (!profile) return null;
+      db.memberGroups = db.memberGroups || [];
+      return db.memberGroups.find(item => item.leaderUid === profile.uid) || null;
+    }
+
+    function ensureCurrentMemberGroup() {
+      const profile = ensureCurrentUserProfile();
+      if (!profile) return null;
+      db.memberGroups = db.memberGroups || [];
+      let group = getCurrentMemberGroup();
+      if (!group) {
+        group = {
+          id: cryptoId('mg', db.memberGroups.length),
+          leaderUid: profile.uid,
+          leaderName: profile.name || profile.email || '',
+          churchId: profile.churchId || '',
+          name: '',
+          address: '',
+          day: 'Sabado',
+          time: '',
+          memberIds: [],
+          membersText: '',
+          attendance: []
+        };
+        db.memberGroups.push(group);
+      }
+      return group;
+    }
+
+    function renderMemberPortalTools() {
+      const profile = ensureCurrentUserProfile();
+      if (!profile) return;
+
+      const reports = getCurrentMemberReports();
+      document.getElementById('memberReportRows').innerHTML = reports.map(report => `
+        <article class="report-card">
+          <strong>${report.date || 'Sin fecha'} - ${escapeHtml(report.level || 'activo')}</strong>
+          <small>${(report.areas || []).join(', ') || 'Sin areas marcadas'}</small>
+          <p>${escapeHtml(report.notes || 'Sin comentario')}</p>
+        </article>
+      `).join('') || '<div class="empty">Tus reportes semanales apareceran aqui.</div>';
+
+      const officialMembers = db.miembros.filter(member => member.churchId === profile.churchId);
+      const group = getCurrentMemberGroup();
+      const selected = new Set((group && group.memberIds) || []);
+
+      document.getElementById('memberGroupOfficialMembers').innerHTML = officialMembers.map(member => `
+        <label><input type="checkbox" value="${member.id}" data-member-group-official ${selected.has(member.id) ? 'checked' : ''}> ${escapeHtml(member.name)}</label>
+      `).join('') || '<div class="empty">Aun no hay miembros oficiales en tu iglesia. Puedes escribir nombres nuevos abajo.</div>';
+
+      const selectedOfficialMembers = officialMembers.filter(member => selected.has(member.id));
+      const newMemberNames = ((group && group.membersText) || '')
+        .split('\n')
+        .map(name => name.trim())
+        .filter(Boolean);
+      const groupMemberRows = [
+        ...selectedOfficialMembers.map(member => ({
+          id: member.id,
+          name: member.name,
+          type: 'official'
+        })),
+        ...newMemberNames.map((name, index) => ({
+          id: String(index),
+          name,
+          type: 'new'
+        }))
+      ];
+      const groupMemberNames = groupMemberRows.map(member => member.name);
+
+      document.getElementById('memberGroupRegisteredRows').innerHTML = groupMemberNames.length ? `
+        <article class="report-card">
+          <strong>Miembros registrados en este grupo</strong>
+          <small>${groupMemberNames.length} personas vinculadas</small>
+          <div class="stack" style="margin-top:10px;">
+            ${groupMemberRows.map(member => `
+              <div class="inline-actions" style="justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;">
+                <span>${escapeHtml(member.name)}</span>
+                <button class="btn danger" type="button" ${member.type === 'official' ? `data-remove-group-member="${member.id}"` : `data-remove-group-new="${member.id}"`}>Quitar</button>
+              </div>
+            `).join('')}
+          </div>
+        </article>
+      ` : '<div class="empty">Cuando guardes el grupo, los miembros seleccionados quedaran registrados aqui.</div>';
+
+      document.getElementById('groupAttendanceMemberRows').innerHTML = groupMemberNames.length ? [
+        ...selectedOfficialMembers.map(member => `
+          <label><input type="checkbox" value="${member.id}" data-group-attendance-member> ${escapeHtml(member.name)}</label>
+        `),
+        ...newMemberNames.map((name, index) => `
+          <label><input type="checkbox" value="new:${index}:${escapeHtml(name)}" data-group-attendance-member> ${escapeHtml(name)}</label>
+        `)
+      ].join('') : '<div class="empty">Guarda primero los miembros del grupo para marcarlos en la asistencia.</div>';
+
+      if (group) {
+        document.getElementById('memberGroupName').value = group.name || '';
+        document.getElementById('memberGroupAddress').value = group.address || '';
+        document.getElementById('memberGroupDay').value = group.day || 'Sabado';
+        document.getElementById('memberGroupTime').value = group.time || '';
+        document.getElementById('memberGroupMembers').value = group.membersText || '';
+      }
+
+      const attendance = ((group && group.attendance) || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      document.getElementById('groupAttendanceRows').innerHTML = attendance.map(item => `
+        <article class="report-card">
+          <strong>${item.date || 'Sin fecha'} - ${item.count || 0} asistentes</strong>
+          <small>${item.friends || 0} amigos invitados</small>
+          <p>${(item.attendeeIds || []).length ? 'Presentes: ' + (item.attendeeIds || []).map(getAttendanceMemberName).map(escapeHtml).join(', ') + '<br>' : ''}${escapeHtml(item.notes || 'Sin observaciones')}</p>
+        </article>
+      `).join('') || '<div class="empty">Las asistencias guardadas apareceran aqui.</div>';
+
+      const students = getCurrentBibleStudents();
+      document.getElementById('bibleStudentRows').innerHTML = students.map(student => `
+        <article class="report-card">
+          <strong>${escapeHtml(student.name)} - ${escapeHtml(student.course)}</strong>
+          <small>Leccion ${student.lesson}/21 · ${escapeHtml(student.status)}${student.phone ? ' · ' + escapeHtml(student.phone) : ''}</small>
+          <p>${escapeHtml(student.notes || 'Sin observaciones')}</p>
+        </article>
+      `).join('') || '<div class="empty">Tus amigos en estudio biblico apareceran aqui.</div>';
     }
 
     function escapeHtml(value) {
@@ -1934,6 +3383,82 @@
       return escapeHtml(text.length > 180 ? `${text.slice(0, 180)}...` : text).replace(/\n/g, '<br>');
     }
 
+    function plainTextFromHtml(value) {
+      const template = document.createElement('template');
+      template.innerHTML = String(value || '');
+      return (template.content.textContent || '').trim();
+    }
+
+    function sanitizeNoteHtml(value) {
+      const template = document.createElement('template');
+      template.innerHTML = String(value || '');
+      template.content.querySelectorAll('script, style, iframe, object, embed, link, meta').forEach(node => node.remove());
+      template.content.querySelectorAll('*').forEach(node => {
+        [...node.attributes].forEach(attr => {
+          const name = attr.name.toLowerCase();
+          const val = attr.value || '';
+          const allowedImg = node.tagName === 'IMG' && ['src', 'alt'].includes(name) && /^data:image\//.test(val);
+          const allowedText = ['class'].includes(name) && ['note-inline-image'].includes(val);
+          if (!allowedImg && !allowedText) node.removeAttribute(attr.name);
+        });
+      });
+      return template.innerHTML.trim();
+    }
+
+    function noteContent(note) {
+      if (note.bodyHtml) return sanitizeNoteHtml(note.bodyHtml);
+      return `<p>${escapeHtml(note.body || '').replace(/\n/g, '<br>')}</p>`;
+    }
+
+    function updateImagePreview(previewId, image, label = 'Imagen lista para guardar') {
+      const preview = document.getElementById(previewId);
+      if (!preview) return;
+      const img = preview.querySelector('img');
+      const text = preview.querySelector('span');
+      preview.classList.toggle('show', Boolean(image));
+      if (img) img.src = image || '';
+      if (text) text.textContent = label;
+    }
+
+    function imageFileToDataUrl(file, maxWidth = 1200, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) {
+          reject(new Error('Selecciona una imagen valida.'));
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+        reader.onload = () => {
+          const source = reader.result;
+          const image = new Image();
+          image.onerror = () => resolve(source);
+          image.onload = () => {
+            const ratio = Math.min(1, maxWidth / image.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.width * ratio));
+            canvas.height = Math.max(1, Math.round(image.height * ratio));
+            const context = canvas.getContext('2d');
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          image.src = source;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function insertImageInNote(file) {
+      try {
+        const dataUrl = await imageFileToDataUrl(file, 1100, 0.82);
+        const editor = document.getElementById('noteBody');
+        editor.focus();
+        document.execCommand('insertHTML', false, `<img class="note-inline-image" src="${dataUrl}" alt="Imagen de la nota">`);
+      } catch (error) {
+        toast(error.message || 'No se pudo insertar la imagen.');
+      }
+    }
+
     function getVisibleWorks() {
       return db.obras.filter(work => !state.filters.workChurch || work.churchId === state.filters.workChurch);
     }
@@ -1944,10 +3469,10 @@
       return db.gastos.filter(expense => {
         const workMatch = state.filters.workId ? expense.workId === state.filters.workId : workIds.includes(expense.workId);
         const yearMatch = !state.filters.workYear || recordYear(expense.date) === state.filters.workYear;
-        const textMatch = includesText([getWorkName(expense.workId), expense.journal, expense.date, expense.type, expense.description, String(expense.amount)], state.filters.expenses);
-        return workMatch && yearMatch && textMatch;
-      });
-    }
+      const textMatch = includesText([getWorkName(expense.workId), expense.journal, expense.date, expense.type, expense.description, expense.receiptName, String(expense.amount)], state.filters.expenses);
+      return workMatch && yearMatch && textMatch;
+    });
+  }
 
     function hasChurches() {
       if (db.iglesias.length) return true;
@@ -1957,6 +3482,10 @@
     }
 
     function show(id) {
+      if (currentUserProfile && !canAccessSection(id)) {
+        id = 'portal';
+        toast('Tu rol actual no tiene acceso a ese modulo.');
+      }
       document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === id));
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.id === id));
       const section = document.getElementById(id);
@@ -2020,7 +3549,15 @@
     }
 
     function render() {
+      ensureCurrentUserProfile();
       renderSelects();
+      renderProfile();
+      renderUsers();
+      renderPortal();
+      renderAnnouncements();
+      renderMemberPortalTools();
+      renderPublicRegistrationOptions();
+      renderDistricts();
       renderChurches();
       renderMembers();
       renderVisits();
@@ -2034,8 +3571,12 @@
     }
 
     function renderSelects() {
-      const options = db.iglesias.map(ch => `<option value="${ch.id}">${ch.name}</option>`).join('');
+      const options = db.iglesias.map(ch => `<option value="${ch.id}">${getChurchLabel(ch.id)}</option>`).join('');
       const filterOptions = `<option value="">Todas las iglesias</option>${options}`;
+      const districtOptions = `<option value="">Todos los distritos</option>${churchDistricts().map(district => `<option value="${escapeHtml(district)}">${escapeHtml(district)}</option>`).join('')}`;
+      const enabledDistrictOptions = enabledDistricts().map(district => `<option value="${escapeHtml(district)}">${escapeHtml(district)}</option>`).join('');
+      const pastorChurches = db.iglesias.filter(ch => !state.filters.pastorDistrict || (ch.district || 'Sin distrito') === state.filters.pastorDistrict);
+      const pastorChurchOptions = `<option value="">Todas las iglesias</option>${pastorChurches.map(ch => `<option value="${ch.id}">${escapeHtml(ch.name)}</option>`).join('')}`;
       const visibleWorks = getVisibleWorks();
       if (state.filters.workId && !visibleWorks.some(work => work.id === state.filters.workId)) {
         state.filters.workId = '';
@@ -2043,6 +3584,8 @@
       const workOptions = visibleWorks.map(work => `<option value="${work.id}">${work.name}</option>`).join('');
       const allWorkOptions = db.obras.map(work => `<option value="${work.id}">${work.name} - ${getChurchName(work.churchId)}</option>`).join('');
       const workFilterOptions = `<option value="">Todas las obras</option>${workOptions}`;
+      document.getElementById('iDistrict').innerHTML = enabledDistrictOptions || '<option value="">Registra y habilita un distrito</option>';
+      document.getElementById('iDistrict').disabled = !enabledDistrictOptions;
       document.getElementById('mI').innerHTML = options;
       document.getElementById('vI').innerHTML = options;
       document.getElementById('memberChurchFilter').innerHTML = filterOptions;
@@ -2073,6 +3616,14 @@
       document.getElementById('obraYearFilter').value = state.filters.workYear;
       document.getElementById('workChurch').innerHTML = options;
       document.getElementById('expenseWork').innerHTML = allWorkOptions;
+      document.getElementById('announcementChurch').innerHTML = `<option value="all">Todas las iglesias</option>${options}`;
+      document.getElementById('pastorDistrictFilter').innerHTML = districtOptions;
+      document.getElementById('pastorDistrictFilter').value = state.filters.pastorDistrict;
+      if (state.filters.pastorChurch && !pastorChurches.some(ch => ch.id === state.filters.pastorChurch)) {
+        state.filters.pastorChurch = '';
+      }
+      document.getElementById('pastorChurchFilter').innerHTML = pastorChurchOptions;
+      document.getElementById('pastorChurchFilter').value = state.filters.pastorChurch;
       document.getElementById('mI').disabled = !db.iglesias.length;
       document.getElementById('vI').disabled = !db.iglesias.length;
       document.getElementById('memberChurchFilter').disabled = !db.iglesias.length;
@@ -2096,6 +3647,9 @@
       if (!document.getElementById('loanDate').value) document.getElementById('loanDate').value = defaultDate;
       if (!document.getElementById('orderYear').value) document.getElementById('orderYear').value = defaultDate.slice(0, 4);
       if (!document.getElementById('noteDate').value) document.getElementById('noteDate').value = defaultDate;
+      if (!document.getElementById('announcementDate').value) document.getElementById('announcementDate').value = defaultDate;
+      if (!document.getElementById('memberReportDate').value) document.getElementById('memberReportDate').value = defaultDate;
+      if (!document.getElementById('groupAttendanceDate').value) document.getElementById('groupAttendanceDate').value = defaultDate;
       renderLoanOptions();
       renderVisitMemberOptions();
     }
@@ -2211,28 +3765,60 @@
       document.getElementById('notesLastTitle').textContent = lastNote ? (lastNote.title || 'Sin titulo') : 'Sin registros';
 
       document.getElementById('noteRows').innerHTML = visible.map(note => `
-        <tr>
-          <td>${note.date || 'Sin fecha'}</td>
-          <td>${escapeHtml(note.title || 'Sin titulo')}</td>
-          <td>${notePreview(note.body)}</td>
-          <td class="actions"><button class="btn danger" type="button" data-delete="notas" data-id="${note.id}">Eliminar</button></td>
-        </tr>
-      `).join('') || emptyRow('No hay notas registradas.', 4);
+        <details class="note-item">
+          <summary>
+            <span>
+              <span class="note-title">${escapeHtml(note.title || 'Sin titulo')}</span>
+              <span class="note-meta">${note.date || 'Sin fecha'}${note.bodyHtml ? ' · con contenido enriquecido' : ''}</span>
+            </span>
+            <span class="note-toggle" aria-hidden="true"></span>
+          </summary>
+          <div class="note-content">
+            ${noteContent(note)}
+            <div class="note-actions">
+              <button class="btn danger" type="button" data-delete="notas" data-id="${note.id}">Eliminar nota</button>
+            </div>
+          </div>
+        </details>
+      `).join('') || '<div class="empty">No hay notas registradas.</div>';
     }
 
     function renderChurches() {
       const rows = db.iglesias
-        .filter(ch => includesText([ch.name, ch.address], state.filters.churches))
+        .filter(ch => includesText([ch.name, ch.address, ch.district, ch.active === false ? 'deshabilitada' : 'habilitada'], state.filters.churches))
         .map(ch => {
           const members = db.miembros.filter(member => member.churchId === ch.id).length;
           return `<tr>
+            <td>${ch.district || 'Sin distrito'}</td>
             <td>${ch.name}</td>
-            <td>${ch.address || 'Sin dato'}</td>
+            <td>${ch.address || 'Sin dato'}<br><small>${ch.active === false ? 'No visible para registro' : 'Visible para registro'}</small></td>
             <td>${members}</td>
-            <td class="actions"><button class="btn danger" type="button" data-delete="iglesias" data-id="${ch.id}">Eliminar iglesia</button></td>
+            <td class="actions">
+              <button class="btn secondary" type="button" data-toggle-church="${ch.id}">${ch.active === false ? 'Habilitar' : 'Deshabilitar'}</button>
+              <button class="btn danger" type="button" data-delete="iglesias" data-id="${ch.id}">Eliminar iglesia</button>
+            </td>
           </tr>`;
         }).join('');
-      document.getElementById('tI').innerHTML = rows || emptyRow('No hay iglesias registradas.', 4);
+      document.getElementById('tI').innerHTML = rows || emptyRow('No hay iglesias registradas.', 5);
+    }
+
+    function renderDistricts() {
+      const rows = (db.districts || [])
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(district => {
+          const churchCount = db.iglesias.filter(ch => ch.district === district.name).length;
+          const active = district.active !== false;
+          return `<tr>
+            <td>${escapeHtml(district.name)}</td>
+            <td>${churchCount}</td>
+            <td>${active ? 'Habilitado' : 'Deshabilitado'}</td>
+            <td class="actions">
+              <button class="btn secondary" type="button" data-toggle-district="${district.id}">${active ? 'Deshabilitar' : 'Habilitar'}</button>
+            </td>
+          </tr>`;
+        }).join('');
+      document.getElementById('tD').innerHTML = rows || emptyRow('Registra primero un distrito.', 4);
     }
 
     function renderMembers() {
@@ -2248,6 +3834,7 @@
           <td>${member.address || 'Sin dato'}</td>
           <td>${getChurchName(member.churchId)}</td>
           <td class="actions">
+            <button class="btn secondary" type="button" data-whatsapp-member="${member.id}">WhatsApp</button>
             <button class="btn secondary" type="button" data-edit-member="${member.id}">Editar</button>
             <button class="btn danger" type="button" data-delete="miembros" data-id="${member.id}">Eliminar</button>
           </td>
@@ -2342,18 +3929,22 @@
           <td>${expense.type}</td>
           <td>${expense.description || 'Sin descripcion'}</td>
           <td>${money(expense.amount)}</td>
+          <td>${expense.receiptImage ? `<button class="btn secondary" type="button" data-view-image="${expense.id}">Ver imagen</button>` : 'Sin imagen'}</td>
           <td class="actions">
             <button class="btn secondary" type="button" data-edit-expense="${expense.id}">Editar</button>
             <button class="btn danger" type="button" data-delete="gastos" data-id="${expense.id}">Eliminar gasto</button>
           </td>
         </tr>`).join('');
-      document.getElementById('tGasto').innerHTML = rows || emptyRow('No hay gastos registrados.', 7);
+      document.getElementById('tGasto').innerHTML = rows || emptyRow('No hay gastos registrados.', 8);
     }
 
     function resetExpenseForm() {
       state.editingExpenseId = '';
+      state.expenseReceiptImage = '';
+      state.expenseReceiptName = '';
       document.getElementById('expenseForm').reset();
       document.getElementById('expenseSubmitBtn').textContent = 'Guardar gasto';
+      updateImagePreview('expenseReceiptPreview', '');
     }
 
     function loadExpenseForEdit(id) {
@@ -2369,6 +3960,9 @@
       document.getElementById('descG').value = expense.description || '';
       document.getElementById('montoG').value = expense.amount || '';
       document.getElementById('tipoG').value = expense.type || 'Materiales';
+      state.expenseReceiptImage = expense.receiptImage || '';
+      state.expenseReceiptName = expense.receiptName || '';
+      updateImagePreview('expenseReceiptPreview', state.expenseReceiptImage, state.expenseReceiptName || 'Imagen guardada en este gasto');
       document.getElementById('expenseSubmitBtn').textContent = 'Actualizar gasto';
       document.getElementById('expenseForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -2676,10 +4270,50 @@
         ...db.bautismos.slice(-3).map(item => ({ module: 'Bautismo', detail: item.name, date: item.campaign || getChurchName(item.churchId) })),
         ...db.gastos.slice(-3).map(item => ({ module: 'Obra', detail: `${item.type}: ${money(item.amount)}`, date: item.description || 'Gasto' })),
         ...db.materiales.slice(-3).map(item => ({ module: 'Material', detail: item.name, date: getChurchName(item.churchId) })),
-        ...(db.notas || []).slice(-3).map(item => ({ module: 'Nota', detail: item.title || 'Sin titulo', date: item.date || 'Sin fecha' }))
+        ...(db.notas || []).slice(-3).map(item => ({ module: 'Nota', detail: item.title || 'Sin titulo', date: item.date || 'Sin fecha' })),
+        ...(db.announcements || []).slice(-3).map(item => ({ module: 'Anuncio', detail: item.title || 'Sin titulo', date: item.date || 'Sin fecha' }))
       ].slice(-8).reverse();
 
       document.getElementById('recentRows').innerHTML = recent.map(item => `<tr><td>${item.module}</td><td>${item.detail}</td><td>${item.date}</td></tr>`).join('') || emptyRow('La actividad reciente aparecera aqui.', 3);
+
+      const memberReports = (db.memberReports || [])
+        .filter(report => matchesPastorScope(report.churchId, [report.name, report.email, report.level, ...(report.areas || []), report.notes]))
+        .slice()
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .slice(0, 8);
+      document.getElementById('pastorMemberReportRows').innerHTML = memberReports.map(report => `
+        <article class="report-card">
+          <strong>${escapeHtml(report.name || report.email || 'Miembro')} - ${report.date || 'Sin fecha'}</strong>
+          <small>${getChurchLabel(report.churchId)} · ${escapeHtml(report.level || 'activo')}</small>
+          <p>${(report.areas || []).join(', ') || 'Sin areas'}${report.notes ? '<br>' + escapeHtml(report.notes) : ''}</p>
+        </article>
+      `).join('') || '<div class="empty">Los reportes de miembros apareceran aqui.</div>';
+
+      const memberGroups = (db.memberGroups || [])
+        .filter(group => matchesPastorScope(group.churchId, [group.name, group.leaderName, group.address, group.day, group.membersText, ...(group.memberIds || []).map(getMemberName)]))
+        .slice()
+        .sort((a, b) => (b.id || '').localeCompare(a.id || ''))
+        .slice(0, 8);
+      document.getElementById('pastorMemberGroupRows').innerHTML = memberGroups.map(group => `
+        <article class="report-card">
+          <strong>${escapeHtml(group.name || 'Grupo sin nombre')}</strong>
+          <small>${getChurchLabel(group.churchId)} · Lider: ${escapeHtml(group.leaderName || 'Sin nombre')}</small>
+          <p>${escapeHtml(group.day || 'Sin dia')} ${escapeHtml(group.time || '')}<br>${escapeHtml(group.address || 'Sin direccion')}<br>Miembros oficiales: ${(group.memberIds || []).map(getMemberName).join(', ') || 'Sin seleccion'}${group.membersText ? '<br>Nombres nuevos: ' + escapeHtml(group.membersText) : ''}</p>
+        </article>
+      `).join('') || '<div class="empty">Los grupos reportados por lideres apareceran aqui.</div>';
+
+      const bibleStudents = (db.bibleStudents || [])
+        .filter(student => matchesPastorScope(student.churchId, [student.name, student.phone, student.course, student.status, student.notes, student.reporterName, student.reporterEmail]))
+        .slice()
+        .sort((a, b) => (b.updatedAt || b.createdAt || '').localeCompare(a.updatedAt || a.createdAt || ''))
+        .slice(0, 10);
+      document.getElementById('pastorBibleStudentRows').innerHTML = bibleStudents.map(student => `
+        <article class="report-card">
+          <strong>${escapeHtml(student.name)} - ${escapeHtml(student.course)}</strong>
+          <small>${getChurchLabel(student.churchId)} · Reporta: ${escapeHtml(student.reporterName || student.reporterEmail || 'Sin dato')}</small>
+          <p>Leccion ${student.lesson}/21 · ${escapeHtml(student.status)}${student.phone ? '<br>Telefono: ' + escapeHtml(student.phone) : ''}${student.notes ? '<br>' + escapeHtml(student.notes) : ''}</p>
+        </article>
+      `).join('') || '<div class="empty">Los estudiantes biblicos reportados apareceran aqui.</div>';
     }
 
     document.querySelector('nav').addEventListener('click', event => {
@@ -2694,6 +4328,10 @@
       const pass = document.getElementById('loginPass').value;
       const loginError = document.getElementById('loginError');
       loginError.textContent = '';
+      pendingLoginIntent = loginRole === 'admin' ? 'admin' : 'member';
+      demoMode = false;
+      pendingRegistrationProfile = null;
+      currentUserProfile = null;
 
       try {
         await signInWithEmailAndPassword(firebaseAuth, user, pass);
@@ -2724,19 +4362,37 @@
       }
     });
 
+    document.getElementById('pastorAccessToggle').addEventListener('click', () => {
+      updateLoginMode(loginRole === 'admin' ? 'member' : 'admin');
+    });
+    document.getElementById('newDistrict').addEventListener('change', renderPublicRegistrationOptions);
+
     document.getElementById('registerUserForm').addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.currentTarget;
+      const name = document.getElementById('newName').value.trim();
       const email = document.getElementById('newUser').value.trim();
       const password = document.getElementById('newPass').value;
+      const churchId = document.getElementById('newChurch').value;
       const registerError = document.getElementById('registerError');
       registerError.textContent = '';
 
+      if (!churchId) {
+        registerError.textContent = 'Selecciona distrito e iglesia para registrarte.';
+        return;
+      }
+
       try {
+        pendingLoginIntent = 'member';
+        demoMode = false;
+        pendingRegistrationProfile = { name, email, churchId };
+        currentUserProfile = null;
         await createUserWithEmailAndPassword(firebaseAuth, email, password);
         form.reset();
-        toast('Usuario creado en Firebase.');
+        renderPublicRegistrationOptions();
+        toast('Miembro registrado. Completa tu perfil.');
       } catch (error) {
+        pendingRegistrationProfile = null;
         console.warn('No se pudo crear el usuario Firebase.', error);
         registerError.textContent = 'No se pudo crear. Usa correo valido y clave de minimo 6 caracteres.';
       }
@@ -2745,21 +4401,222 @@
     document.getElementById('logoutBtn').addEventListener('click', () => {
       signOut(firebaseAuth).catch(error => console.warn('No se pudo cerrar Firebase.', error));
       currentFirebaseUser = null;
+      currentUserProfile = null;
+      pendingLoginIntent = '';
+      pendingRegistrationProfile = null;
+      demoMode = false;
       cloudReady = false;
       db = normalizeDb({});
       render();
       setSyncStatus('local', 'Inicia sesion con Firebase');
       setAuthenticated(false);
+      loadPublicRegistrationData();
       show('dash');
+    });
+
+    document.getElementById('profileForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = ensureCurrentUserProfile();
+      if (!profile) {
+        toast('Inicia sesion para guardar tu perfil.');
+        return;
+      }
+      profile.name = document.getElementById('profileName').value.trim();
+      profile.phone = document.getElementById('profilePhone').value.trim();
+      profile.churchId = document.getElementById('profileChurch').value;
+      profile.participation = document.getElementById('profileParticipation').value;
+      profile.isGroupLeader = document.getElementById('profileIsLeader').checked;
+      profile.updatedAt = new Date().toISOString();
+      save('Perfil actualizado.');
+    });
+
+    document.getElementById('announcementForm').addEventListener('submit', event => {
+      event.preventDefault();
+      if (!canManageAnnouncements()) {
+        toast('Tu rol no puede publicar anuncios.');
+        return;
+      }
+      const churchValue = document.getElementById('announcementChurch').value || 'all';
+      db.announcements = db.announcements || [];
+      db.announcements.push({
+        id: cryptoId('an', db.announcements.length),
+        title: document.getElementById('announcementTitle').value.trim(),
+        body: document.getElementById('announcementBody').value.trim(),
+        date: document.getElementById('announcementDate').value,
+        churchIds: churchValue === 'all' ? ['all'] : [churchValue],
+        important: document.getElementById('announcementImportant').checked,
+        published: true,
+        createdBy: currentFirebaseUser ? currentFirebaseUser.uid : '',
+        createdByEmail: currentFirebaseUser ? currentFirebaseUser.email || '' : '',
+        createdAt: new Date().toISOString()
+      });
+      event.currentTarget.reset();
+      document.getElementById('announcementDate').value = new Date().toISOString().slice(0, 10);
+      save('Anuncio publicado.');
+    });
+
+    document.getElementById('memberParticipationForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = ensureCurrentUserProfile();
+      if (!profile || profile.role !== 'member') {
+        toast('Este reporte corresponde al rol Miembro.');
+        return;
+      }
+      db.memberReports = db.memberReports || [];
+      db.memberReports.push({
+        id: cryptoId('rm', db.memberReports.length),
+        uid: profile.uid,
+        churchId: profile.churchId || '',
+        name: profile.name || '',
+        email: profile.email || '',
+        date: document.getElementById('memberReportDate').value,
+        level: document.getElementById('memberReportLevel').value,
+        areas: [...document.querySelectorAll('[data-member-area]:checked')].map(input => input.value),
+        notes: document.getElementById('memberReportNotes').value.trim(),
+        createdAt: new Date().toISOString()
+      });
+      event.currentTarget.reset();
+      document.querySelectorAll('[data-member-area]').forEach(input => { input.checked = false; });
+      document.getElementById('memberReportDate').value = new Date().toISOString().slice(0, 10);
+      save('Reporte enviado al pastor.');
+    });
+
+    document.getElementById('bibleStudentForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = ensureCurrentUserProfile();
+      if (!profile || profile.role !== 'member') {
+        toast('Este registro corresponde al rol Miembro.');
+        return;
+      }
+      const lesson = Math.max(1, Math.min(21, Number(document.getElementById('bibleLesson').value || 1)));
+      db.bibleStudents = db.bibleStudents || [];
+      db.bibleStudents.push({
+        id: cryptoId('eb', db.bibleStudents.length),
+        uid: profile.uid,
+        reporterName: profile.name || '',
+        reporterEmail: profile.email || '',
+        churchId: profile.churchId || '',
+        name: document.getElementById('bibleStudentName').value.trim(),
+        phone: document.getElementById('bibleStudentPhone').value.trim(),
+        course: document.getElementById('bibleCourse').value,
+        lesson,
+        status: document.getElementById('bibleStatus').value,
+        notes: document.getElementById('bibleNotes').value.trim(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      event.currentTarget.reset();
+      document.getElementById('bibleLesson').value = 1;
+      save('Estudiante biblico reportado al pastor.');
+    });
+
+    document.getElementById('memberGroupForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = ensureCurrentUserProfile();
+      if (!profile || profile.role !== 'member' || !profile.isGroupLeader) {
+        toast('Activa en tu perfil que eres lider de grupo.');
+        return;
+      }
+      const group = ensureCurrentMemberGroup();
+      if (!group) return;
+      group.leaderName = profile.name || profile.email || '';
+      group.churchId = profile.churchId || '';
+      group.name = document.getElementById('memberGroupName').value.trim();
+      group.address = document.getElementById('memberGroupAddress').value.trim();
+      group.day = document.getElementById('memberGroupDay').value;
+      group.time = document.getElementById('memberGroupTime').value;
+      group.memberIds = [...document.querySelectorAll('[data-member-group-official]:checked')].map(input => input.value);
+      group.membersText = document.getElementById('memberGroupMembers').value.trim();
+      save('Grupo reportado al pastor.');
+    });
+
+    document.getElementById('groupAttendanceForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const profile = ensureCurrentUserProfile();
+      if (!profile || profile.role !== 'member' || !profile.isGroupLeader) {
+        toast('Activa en tu perfil que eres lider de grupo.');
+        return;
+      }
+      const group = ensureCurrentMemberGroup();
+      if (!group) return;
+      const attendeeIds = [...document.querySelectorAll('[data-group-attendance-member]:checked')].map(input => input.value);
+      group.attendance = group.attendance || [];
+      group.attendance.push({
+        id: cryptoId('as', group.attendance.length),
+        date: document.getElementById('groupAttendanceDate').value,
+        count: attendeeIds.length || Number(document.getElementById('groupAttendanceCount').value || 0),
+        friends: Number(document.getElementById('groupFriendsCount').value || 0),
+        attendeeIds,
+        notes: document.getElementById('groupAttendanceNotes').value.trim()
+      });
+      event.currentTarget.reset();
+      document.getElementById('groupAttendanceDate').value = new Date().toISOString().slice(0, 10);
+      save('Asistencia reportada al pastor.');
+    });
+
+    document.getElementById('userRoleRows').addEventListener('change', event => {
+      if (!isPastorAdmin()) {
+        toast('Solo Pastor/Admin puede cambiar roles.');
+        renderUsers();
+        return;
+      }
+
+      const roleControl = event.target.closest('[data-user-role]');
+      const churchControl = event.target.closest('[data-user-church]');
+      const uid = roleControl ? roleControl.dataset.userRole : (churchControl ? churchControl.dataset.userChurch : '');
+      const profile = (db.users || []).find(user => user.uid === uid);
+      if (!profile) return;
+
+      if (roleControl) {
+        const nextRole = roleControl.value;
+        const adminCount = (db.users || []).filter(user => user.role === 'pastor_admin').length;
+        if (profile.role === 'pastor_admin' && nextRole !== 'pastor_admin' && adminCount <= 1) {
+          toast('Debe quedar al menos un Pastor/Admin.');
+          renderUsers();
+          return;
+        }
+        profile.role = nextRole;
+      }
+
+      if (churchControl) {
+        profile.churchId = churchControl.value;
+      }
+
+      profile.updatedAt = new Date().toISOString();
+      if (currentFirebaseUser && profile.uid === currentFirebaseUser.uid) currentUserProfile = profile;
+      save('Usuario actualizado.');
+    });
+
+    document.getElementById('districtForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const name = document.getElementById('districtName').value.trim();
+      if (!name) return;
+      db.districts = db.districts || [];
+      const existing = db.districts.find(district => district.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.active = true;
+        toast('Distrito habilitado.');
+      } else {
+        db.districts.push({ id: cryptoId('dt', db.districts.length), name, active: true });
+      }
+      event.currentTarget.reset();
+      save(existing ? 'Distrito actualizado.' : 'Distrito registrado.');
     });
 
     document.getElementById('churchForm').addEventListener('submit', event => {
       event.preventDefault();
       const name = document.getElementById('iName').value.trim();
+      const district = document.getElementById('iDistrict').value;
       const address = document.getElementById('iAddress').value.trim();
+      const active = document.getElementById('iActive').checked;
+      if (!district) {
+        toast('Primero registra y habilita un distrito.');
+        return;
+      }
       if (!name) return;
-      db.iglesias.push({ id: cryptoId('ig', db.iglesias.length), name, address });
+      db.iglesias.push({ id: cryptoId('ig', db.iglesias.length), name, district, address, active });
       event.currentTarget.reset();
+      document.getElementById('iActive').checked = true;
       save('Iglesia registrada.');
     });
 
@@ -2902,7 +4759,9 @@
         date: document.getElementById('expenseDate').value,
         description: document.getElementById('descG').value.trim(),
         amount: Number(document.getElementById('montoG').value || 0),
-        type: document.getElementById('tipoG').value
+        type: document.getElementById('tipoG').value,
+        receiptImage: state.expenseReceiptImage,
+        receiptName: state.expenseReceiptName
       };
       if (state.editingExpenseId) {
         const expense = db.gastos.find(item => item.id === state.editingExpenseId);
@@ -3046,17 +4905,43 @@
     document.getElementById('noteForm').addEventListener('submit', event => {
       event.preventDefault();
       db.notas = db.notas || [];
+      const editor = document.getElementById('noteBody');
+      const bodyHtml = sanitizeNoteHtml(editor.innerHTML);
+      const bodyText = plainTextFromHtml(bodyHtml);
+      if (!bodyText && !bodyHtml.includes('<img')) {
+        toast('Escribe el contenido de la nota o inserta una imagen.');
+        return;
+      }
       db.notas.push({
         id: cryptoId('no', db.notas.length),
         title: document.getElementById('noteTitle').value.trim(),
         date: document.getElementById('noteDate').value,
-        body: document.getElementById('noteBody').value.trim()
+        body: bodyText,
+        bodyHtml
       });
       event.currentTarget.reset();
+      editor.innerHTML = '';
       save('Nota guardada.');
     });
 
     document.body.addEventListener('click', event => {
+      const imageBtn = event.target.closest('[data-view-image]');
+      if (imageBtn) {
+        const expense = db.gastos.find(item => item.id === imageBtn.dataset.viewImage);
+        if (!expense || !expense.receiptImage) {
+          toast('Este gasto no tiene imagen.');
+          return;
+        }
+        const imageWindow = window.open('', '_blank');
+        if (!imageWindow) {
+          toast('Permite ventanas emergentes para ver la imagen.');
+          return;
+        }
+        imageWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${escapeHtml(expense.description || 'Imagen del gasto')}</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;padding:24px}img{max-width:100%;max-height:92vh;border-radius:8px;background:#fff}</style></head><body><img src="${expense.receiptImage}" alt="Imagen del gasto"></body></html>`);
+        imageWindow.document.close();
+        return;
+      }
+
       const viewOrderBtn = event.target.closest('[data-view-order]');
       if (viewOrderBtn) {
         showOrderModal(viewOrderBtn.dataset.viewOrder);
@@ -3100,6 +4985,50 @@
         return;
       }
 
+      const whatsappMemberBtn = event.target.closest('[data-whatsapp-member]');
+      if (whatsappMemberBtn) {
+        openWhatsAppModal(whatsappMemberBtn.dataset.whatsappMember);
+        return;
+      }
+
+      const removeGroupMemberBtn = event.target.closest('[data-remove-group-member]');
+      if (removeGroupMemberBtn) {
+        const group = getCurrentMemberGroup();
+        if (!group) return;
+        group.memberIds = (group.memberIds || []).filter(memberId => memberId !== removeGroupMemberBtn.dataset.removeGroupMember);
+        save('Miembro quitado del grupo.');
+        return;
+      }
+
+      const removeGroupNewBtn = event.target.closest('[data-remove-group-new]');
+      if (removeGroupNewBtn) {
+        const group = getCurrentMemberGroup();
+        if (!group) return;
+        const removeIndex = Number(removeGroupNewBtn.dataset.removeGroupNew);
+        const names = (group.membersText || '').split('\n').map(name => name.trim()).filter(Boolean);
+        group.membersText = names.filter((_, index) => index !== removeIndex).join('\n');
+        save('Nombre quitado del grupo.');
+        return;
+      }
+
+      const toggleDistrictBtn = event.target.closest('[data-toggle-district]');
+      if (toggleDistrictBtn) {
+        const district = (db.districts || []).find(item => item.id === toggleDistrictBtn.dataset.toggleDistrict);
+        if (!district) return;
+        district.active = district.active === false;
+        save(district.active ? 'Distrito habilitado para registro.' : 'Distrito deshabilitado para registro.');
+        return;
+      }
+
+      const toggleChurchBtn = event.target.closest('[data-toggle-church]');
+      if (toggleChurchBtn) {
+        const church = db.iglesias.find(item => item.id === toggleChurchBtn.dataset.toggleChurch);
+        if (!church) return;
+        church.active = church.active === false;
+        save(church.active ? 'Iglesia habilitada para registro.' : 'Iglesia deshabilitada para registro.');
+        return;
+      }
+
       const deletePaymentBtn = event.target.closest('[data-delete-payment]');
       if (deletePaymentBtn) {
         const loan = db.prestamos.find(item => item.id === deletePaymentBtn.dataset.deletePayment);
@@ -3113,7 +5042,7 @@
 
       const btn = event.target.closest('[data-delete]');
       if (!btn) return;
-      const labels = { iglesias: 'iglesia', miembros: 'miembro', visitas: 'visita', bautismos: 'bautismo', gastos: 'gasto', materiales: 'material', grupos: 'grupo pequeno', prestamos: 'prestamo', notas: 'nota' };
+      const labels = { iglesias: 'iglesia', miembros: 'miembro', visitas: 'visita', bautismos: 'bautismo', gastos: 'gasto', materiales: 'material', grupos: 'grupo pequeno', prestamos: 'prestamo', notas: 'nota', announcements: 'anuncio' };
       let confirmation = `Eliminar este ${labels[btn.dataset.delete]}?`;
       if (btn.dataset.delete === 'iglesias') {
         const church = db.iglesias.find(item => item.id === btn.dataset.id);
@@ -3140,6 +5069,13 @@
     document.getElementById('memberSearch').addEventListener('input', event => { state.filters.members = event.target.value; renderMembers(); });
     document.getElementById('memberCancelEditBtn').addEventListener('click', resetMemberForm);
     document.getElementById('memberChurchFilter').addEventListener('change', event => { state.filters.memberChurch = event.target.value; renderMembers(); });
+    document.getElementById('whatsappTemplate').addEventListener('change', updateWhatsAppPreview);
+    document.getElementById('openWhatsappBtn').addEventListener('click', openWhatsAppMessage);
+    document.getElementById('copyWhatsappBtn').addEventListener('click', copyWhatsAppMessage);
+    document.getElementById('closeWhatsappBtn').addEventListener('click', closeWhatsAppModal);
+    document.getElementById('whatsappModal').addEventListener('click', event => {
+      if (event.target.id === 'whatsappModal') closeWhatsAppModal();
+    });
     document.getElementById('visitSearch').addEventListener('input', event => { state.filters.visits = event.target.value; renderVisits(); });
     document.getElementById('visitChurchFilter').addEventListener('change', event => { state.filters.visitChurch = event.target.value; renderVisits(); });
     document.getElementById('baptismSearch').addEventListener('input', event => { state.filters.baptisms = event.target.value; renderBaptisms(); });
@@ -3183,6 +5119,38 @@
     document.getElementById('groupSearch').addEventListener('input', event => { state.filters.groups = event.target.value; renderGroups(); });
     document.getElementById('noteSearch').addEventListener('input', event => { state.filters.notes = event.target.value; renderNotes(); });
     document.getElementById('noteDateFilter').addEventListener('change', event => { state.filters.noteDate = event.target.value; renderNotes(); });
+    document.getElementById('noteAddImageBtn').addEventListener('click', () => document.getElementById('noteImageInput').click());
+    document.getElementById('noteImageInput').addEventListener('change', async event => {
+      const file = event.target.files && event.target.files[0];
+      if (file) await insertImageInNote(file);
+      event.target.value = '';
+    });
+    document.getElementById('noteBody').addEventListener('paste', async event => {
+      const files = [...(event.clipboardData && event.clipboardData.files ? event.clipboardData.files : [])].filter(file => file.type.startsWith('image/'));
+      if (!files.length) return;
+      event.preventDefault();
+      for (const file of files) {
+        await insertImageInNote(file);
+      }
+    });
+    document.getElementById('expenseReceipt').addEventListener('change', async event => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      try {
+        state.expenseReceiptImage = await imageFileToDataUrl(file, 1200, 0.82);
+        state.expenseReceiptName = file.name || 'Imagen del gasto';
+        updateImagePreview('expenseReceiptPreview', state.expenseReceiptImage, state.expenseReceiptName);
+      } catch (error) {
+        event.target.value = '';
+        toast(error.message || 'No se pudo cargar la imagen.');
+      }
+    });
+    document.getElementById('removeExpenseReceipt').addEventListener('click', () => {
+      state.expenseReceiptImage = '';
+      state.expenseReceiptName = '';
+      document.getElementById('expenseReceipt').value = '';
+      updateImagePreview('expenseReceiptPreview', '');
+    });
     document.getElementById('groupChurch').addEventListener('change', () => {
       state.selectedGroupMembers = [];
       document.getElementById('groupMemberSearch').value = '';
@@ -3209,10 +5177,28 @@
       state.selectedGroupMembers = [];
       renderGroupMemberOptions();
     });
+    document.getElementById('groupAttendanceMemberRows').addEventListener('change', event => {
+      if (!event.target.matches('[data-group-attendance-member]')) return;
+      const checked = document.querySelectorAll('[data-group-attendance-member]:checked').length;
+      if (checked) document.getElementById('groupAttendanceCount').value = checked;
+    });
     document.getElementById('materialChurchFilter').addEventListener('change', event => { state.filters.materialChurch = event.target.value; renderMaterials(); });
     document.getElementById('materialYearFilter').addEventListener('change', event => { state.filters.materialYear = event.target.value; renderMaterials(); });
     document.getElementById('loanChurchFilter').addEventListener('change', event => { state.filters.loanChurch = event.target.value; renderLoans(); });
     document.getElementById('loanYearFilter').addEventListener('change', event => { state.filters.loanYear = event.target.value; renderLoans(); });
+    document.getElementById('pastorDistrictFilter').addEventListener('change', event => {
+      state.filters.pastorDistrict = event.target.value;
+      state.filters.pastorChurch = '';
+      render();
+    });
+    document.getElementById('pastorChurchFilter').addEventListener('change', event => {
+      state.filters.pastorChurch = event.target.value;
+      renderRecent();
+    });
+    document.getElementById('pastorSearch').addEventListener('input', event => {
+      state.filters.pastorSearch = event.target.value;
+      renderRecent();
+    });
     document.getElementById('orderChurch').addEventListener('change', () => renderOrderItems());
     document.getElementById('orderQuarter').addEventListener('change', () => renderOrderItems());
     document.getElementById('orderYear').addEventListener('change', () => renderOrderItems());
@@ -3256,7 +5242,7 @@
       }, {});
       const scope = state.filters.workId ? getWorkName(state.filters.workId) : (state.filters.workChurch ? getChurchName(state.filters.workChurch) : 'Todas las iglesias y obras');
       const typeRows = Object.keys(byType).map(type => `<tr><td>${type}</td><td>${money(byType[type])}</td></tr>`).join('');
-      const expenseRows = visibleExpenses.map(item => `<tr><td>${getChurchName(item.churchId)}</td><td>${getWorkName(item.workId)}</td><td>${item.journal || 'Sin dato'}</td><td>${item.date || 'Sin fecha'}</td><td>${item.type}</td><td>${item.description || 'Sin descripcion'}</td><td>${money(item.amount)}</td></tr>`).join('');
+      const expenseRows = visibleExpenses.map(item => `<tr><td>${getChurchName(item.churchId)}</td><td>${getWorkName(item.workId)}</td><td>${item.journal || 'Sin dato'}</td><td>${item.date || 'Sin fecha'}</td><td>${item.type}</td><td>${item.description || 'Sin descripcion'}</td><td>${money(item.amount)}</td><td>${item.receiptImage ? 'Con imagen' : 'Sin imagen'}</td></tr>`).join('');
 
       reportWindow.document.write(`
         <!DOCTYPE html>
@@ -3298,7 +5284,7 @@
           <h2>Gastos por tipo</h2>
           <table><thead><tr><th>Tipo</th><th>Total</th></tr></thead><tbody>${typeRows || '<tr><td colspan="2">Sin gastos registrados</td></tr>'}</tbody></table>
           <h2>Detalle de gastos</h2>
-          <table><thead><tr><th>Iglesia</th><th>Obra</th><th>No de Diario</th><th>Fecha</th><th>Tipo</th><th>Descripcion</th><th>Monto</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="7">Sin gastos registrados</td></tr>'}</tbody></table>
+          <table><thead><tr><th>Iglesia</th><th>Obra</th><th>No de Diario</th><th>Fecha</th><th>Tipo</th><th>Descripcion</th><th>Monto</th><th>Imagen</th></tr></thead><tbody>${expenseRows || '<tr><td colspan="8">Sin gastos registrados</td></tr>'}</tbody></table>
           <script>setTimeout(() => window.print(), 300);<\/script>
         </body>
         </html>
@@ -3483,7 +5469,9 @@
     });
 
     onAuthStateChanged(firebaseAuth, user => {
+      if (demoMode) return;
       currentFirebaseUser = user;
+      currentUserProfile = null;
       cloudReady = false;
 
       if (!user) {
@@ -3491,6 +5479,9 @@
         render();
         setAuthenticated(false);
         setSyncStatus('local', 'Inicia sesion con Firebase');
+        pendingLoginIntent = '';
+        pendingRegistrationProfile = null;
+        loadPublicRegistrationData();
         return;
       }
 
@@ -3501,7 +5492,9 @@
 
     setAuthenticated(false);
     setSyncStatus('local', 'Inicia sesion con Firebase');
+    updateLoginMode('member');
     render();
+    loadPublicRegistrationData();
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', async () => {
